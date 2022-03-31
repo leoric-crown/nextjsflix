@@ -98,17 +98,6 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
                 />
               );
             })}
-          {/* 
-          <CardsSection
-            title="Disney"
-            cardSize={CardSizeEnum.small}
-            cardList={videos}
-          />
-          <CardsSection
-            title="Disney"
-            cardSize={CardSizeEnum.medium}
-            cardList={videos}
-          /> */}
         </div>
       </div>
     </div>

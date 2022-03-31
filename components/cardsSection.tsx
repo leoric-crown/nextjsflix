@@ -32,12 +32,11 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
           return index * scrollStep;
         });
       const lastStep = stepsArray[stepsArray.length - 1];
-      const threshold = Math.floor(scrollStep / 2);
+      // const threshold = Math.floor(scrollStep / 2);
+      const threshold = 350
       if (lastStep !== scrollWidth) {
         if (scrollWidth - lastStep < threshold) {
           stepsArray[stepsArray.length - 1] = scrollWidth;
-        } else {
-          stepsArray.push(scrollWidth);
         }
       }
       setScrollSteps(stepsArray);
