@@ -43,24 +43,22 @@ export const getStaticProps = async (): Promise<
   };
 };
 
-const scrollOptions = {
-  root: null,
-  threshold: [0, 1],
-};
-
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
-  const { sections } = props;
   const [isBannerVisible, setIsBannerVisible] = useState(true);
+  const { sections } = props;
 
   const bannerRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entry) => {
-      const { isIntersecting } = entry[0];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const { isIntersecting } = entries[0];
 
-      if (isIntersecting !== isBannerVisible)
-        setIsBannerVisible(isIntersecting);
-    }, scrollOptions);
+        if (isIntersecting !== isBannerVisible)
+          setIsBannerVisible(isIntersecting);
+      },
+      { root: null, threshold: [0, 1] }
+    );
     const currentRef = bannerRef.current;
     if (currentRef) observer.observe(currentRef as Element);
 
