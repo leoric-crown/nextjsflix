@@ -56,20 +56,15 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
 
   useEffect(() => {
     const observer = new IntersectionObserver((entry) => {
-      console.log({ entry });
-      console.log("entry.isIntersecting", entry[0].isIntersecting);
       const { isIntersecting } = entry[0];
 
       if (isIntersecting !== isBannerVisible)
         setIsBannerVisible(isIntersecting);
     }, scrollOptions);
     const currentRef = bannerRef.current;
-    console.log("sectionsRef.current", bannerRef.current);
     if (currentRef) observer.observe(currentRef as Element);
-    console.log("observing...");
 
     return () => {
-      console.log("unobserving...");
       if (currentRef) observer.unobserve(currentRef as Element);
     };
   });

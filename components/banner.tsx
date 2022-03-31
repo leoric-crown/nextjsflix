@@ -15,7 +15,6 @@ const handleOnClickPlay = () => {
 };
 
 export default React.forwardRef<HTMLInputElement, BannerProps>(function Banner(props,ref) {
-  console.log('in banner', ref)
     const { title, subTitle, imgUrl, } = props;
     return (
       <div className={styles.container} ref={ref}>
