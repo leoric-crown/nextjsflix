@@ -16,7 +16,7 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
     if (scrollRef?.current) {
       const leftRightMultiplier = direction === 'LEFT' ? -1: 1
       scrollRef.current.scrollTo({
-          left: scrollRef.current.scrollLeft + leftRightMultiplier * 400,
+          left: scrollRef.current.scrollLeft + leftRightMultiplier * 800,
           behavior: 'smooth'
       })
     }

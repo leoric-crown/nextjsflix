@@ -6,10 +6,11 @@ import styles from "../styles/navbar.module.css";
 
 interface NavBarProps {
   username: string;
+  gradient: boolean;
 }
 
 const NavBar: React.FC<NavBarProps> = (props) => {
-  const { username } = props;
+  const { username, gradient } = props;
 
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -20,7 +21,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={gradient ? styles.container : styles.containerOpaque}>
       <div className={styles.wrapper}>
         <Link href="/">
           <a

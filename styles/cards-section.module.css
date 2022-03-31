@@ -29,14 +29,14 @@
     align-self: center;
     position: absolute;
     left: -0.5rem;
-    z-index: 1000;
+    z-index: 40;
 }
 
 .rightChevronContainer {
     align-self: center;
     position: absolute;
     right: -0.5rem;
-    z-index: 1000;
+    z-index: 40;
 }
 
 .wrap {

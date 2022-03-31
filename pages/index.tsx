@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { GetStaticPropsResult, NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
@@ -43,8 +43,36 @@ export const getStaticProps = async (): Promise<
   };
 };
 
+const scrollOptions = {
+  root: null,
+  threshold: [0, 1],
+};
+
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
   const { sections } = props;
+  const [isBannerVisible, setIsBannerVisible] = useState(true);
+
+  const bannerRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entry) => {
+      console.log({ entry });
+      console.log("entry.isIntersecting", entry[0].isIntersecting);
+      const { isIntersecting } = entry[0];
+
+      if (isIntersecting !== isBannerVisible)
+        setIsBannerVisible(isIntersecting);
+    }, scrollOptions);
+    const currentRef = bannerRef.current;
+    console.log("sectionsRef.current", bannerRef.current);
+    if (currentRef) observer.observe(currentRef as Element);
+    console.log("observing...");
+
+    return () => {
+      console.log("unobserving...");
+      if (currentRef) observer.unobserve(currentRef as Element);
+    };
+  });
 
   return (
     <div className={styles.container}>
@@ -58,21 +86,24 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
       </Head>
 
       <div className={styles.main}>
-        <NavBar username="Richi" />
+        <NavBar username="Richi" gradient={isBannerVisible} />
         <Banner
           title="Harry Potter"
           subTitle="You're a wizard Harry!"
           imgUrl="/static/harry-potter.webp"
+          ref={bannerRef}
         />
         <div className={styles.sectionWrapper}>
           {sections.length > 0 &&
             sections.map((section, index) => {
-              return <CardsSection
-                key={index}
-                title={section.title}
-                cardSize={section.cardSize}
-                cardList={section.cardList}
-              />;
+              return (
+                <CardsSection
+                  key={index}
+                  title={section.title}
+                  cardSize={section.cardSize}
+                  cardList={section.cardList}
+                />
+              );
             })}
           {/* 
           <CardsSection

@@ -10,6 +10,16 @@
   z-index: 50;
 }
 
+.containerOpaque {
+  color: var(--white10);
+  position: fixed;
+  top: 0px;
+  background: var(--black40);
+  width: 100%;
+  z-index: 50;
+}
+
+
 .wrapper {
   padding-left: 1rem /* 16px */;
   padding-right: 1rem /* 16px */;
