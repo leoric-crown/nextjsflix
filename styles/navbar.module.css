@@ -19,7 +19,6 @@
   z-index: 50;
 }
 
-
 .wrapper {
   padding-left: 1rem /* 16px */;
   padding-right: 1rem /* 16px */;
@@ -84,10 +83,11 @@
 .navDropdown {
   position: absolute;
   margin-left: auto;
-  margin-top: 1.5rem /* 12px */;
+  /*margin-top: 1.5rem /* 12px */
   padding-top: 0.5rem /* 8px */;
   padding-bottom: 0.5rem /* 8px */;
-  padding-right: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   background-color: var(--black50);
   border-width: 1px;
   color: var(--white);

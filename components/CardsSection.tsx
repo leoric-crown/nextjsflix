@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { YoutubeVideo } from "../lib/youtube";
 import styles from "../styles/cards-section.module.css";
-import Card, { CardSizeEnum } from "./card";
+import Card, { CardSizeEnum } from "./Card";
 
 export type CardsSectionProps = {
   title: string;

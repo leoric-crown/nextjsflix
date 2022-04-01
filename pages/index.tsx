@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import type { GetStaticPropsResult, NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import Banner from "../components/banner";
-import NavBar from "../components/navbar";
-import CardsSection from "../components/cardsSection";
+import Banner from "../components/Banner";
+import Navbar from "../components/Navbar";
+import CardsSection from "../components/CardsSection";
 import { getSections, Section } from "../lib/sections";
 
 type HomeProps = {
@@ -15,7 +15,8 @@ export const getStaticProps = async (): Promise<
   GetStaticPropsResult<HomeProps>
 > => {
   try {
-    const sections = await getSections();
+    // const sections = await getSections();
+    const sections: Section[] = [];
     return {
       props: {
         sections,
@@ -70,7 +71,7 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
       </Head>
 
       <div className={styles.main}>
-        <NavBar username="Richi" gradient={isBannerVisible} />
+        <Navbar gradientBackground={isBannerVisible} />
         <Banner
           title="Harry Potter"
           subTitle="You're a wizard Harry!"

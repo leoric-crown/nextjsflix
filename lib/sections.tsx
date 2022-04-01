@@ -1,4 +1,4 @@
-import { CardSizeEnum } from "../components/card";
+import { CardSizeEnum } from "../components/Card";
 import { getVideoData, YoutubeVideo } from "./youtube";
 import { YoutubeEndpoint } from "./youtube";
 

@@ -3,14 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../styles/navbar.module.css";
+import NavUser from "../components/NavUser";
 
 interface NavBarProps {
-  username: string;
-  gradient: boolean;
+  gradientBackground: boolean;
 }
 
-const NavBar: React.FC<NavBarProps> = (props) => {
-  const { username, gradient } = props;
+const Navbar: React.FC<NavBarProps> = (props) => {
+  const { gradientBackground } = props;
 
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -21,7 +21,9 @@ const NavBar: React.FC<NavBarProps> = (props) => {
   };
 
   return (
-    <div className={gradient ? styles.container : styles.containerOpaque}>
+    <div
+      className={gradientBackground ? styles.container : styles.containerOpaque}
+    >
       <div className={styles.wrapper}>
         <Link href="/">
           <a
@@ -53,34 +55,15 @@ const NavBar: React.FC<NavBarProps> = (props) => {
           </li>
         </ul>
         <nav className={styles.navContainer}>
-          <div>
-            <button
-              className={styles.usernameBtn}
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
-              <p className={styles.username}>{username}</p>
-              <Image
-                src="/static/expand_more.svg"
-                alt="Expand dropdown"
-                width="24px"
-                height="24px"
-              />
-            </button>
-          </div>
-          {showDropdown && (
-            <div className={styles.navDropdown}>
-              <div>
-                <Link href="/login">
-                  <a className={styles.linkName}>Sign Out</a>
-                </Link>
-                {/* <div className={styles.lineWrapper}></div> */}
-              </div>
-            </div>
-          )}
+          <NavUser
+            user={null}
+            // user={{ name: "someName", id: "someId" }}
+          />
+          
         </nav>
       </div>
     </div>
   );
 };
 
-export default NavBar;
+export default Navbar;
