@@ -1,12 +1,13 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
+import { YoutubeVideo } from "../lib/youtube";
 import styles from "../styles/cards-section.module.css";
-import Card, { CardProps, CardSizeEnum } from "./card";
+import Card, { CardSizeEnum } from "./card";
 
 export type CardsSectionProps = {
   title: string;
   cardSize: CardSizeEnum;
-  cardList: CardProps[];
+  videoList: YoutubeVideo[];
 };
 
 enum ScrollDirection {
@@ -32,8 +33,7 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
           return index * scrollStep;
         });
       const lastStep = stepsArray[stepsArray.length - 1];
-      // const threshold = Math.floor(scrollStep / 2);
-      const threshold = 350
+      const threshold = 350;
       if (lastStep !== scrollWidth) {
         if (scrollWidth - lastStep < threshold) {
           stepsArray[stepsArray.length - 1] = scrollWidth;
@@ -63,7 +63,7 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
     }
   };
 
-  const { title, cardSize, cardList } = props;
+  const { title, cardSize, videoList } = props;
   return (
     <section className={styles.container}>
       <h2 className={styles.title}>{title}</h2>
@@ -80,15 +80,17 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
           />
         </div>
         <div className={styles.cardWrapper} ref={scrollRef}>
-          {cardList?.length > 0 &&
-            cardList.map((card, index) => (
-              <Card
-                key={index}
-                id={index}
-                size={cardSize}
-                imgUrl={card.imgUrl}
-              />
-            ))}
+          {videoList?.length > 0 &&
+            videoList.map((card, index) => {
+              return (
+                <Card
+                  key={index}
+                  id={index}
+                  size={cardSize}
+                  imgUrl={card.imgUrl}
+                />
+              );
+            })}
         </div>
         <div
           className={styles.rightChevronContainer}

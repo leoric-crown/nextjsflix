@@ -3,9 +3,9 @@
   display: inline-block;
 }
 
-.imgMotionWrapper:hover {
-  z-index: 99;
-}
+/* .imgMotionWrapper:hover {
+  z-index: 50;
+} */
 
 .smItem {
   position: relative;
@@ -33,6 +33,10 @@
 .container {
   margin-right: 0.25rem /* 4px */;
   cursor: pointer;
+}
+
+.container:hover {
+  z-index: 50;
 }
 
 .cardImg {

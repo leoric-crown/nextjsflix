@@ -4,43 +4,34 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Banner from "../components/banner";
 import NavBar from "../components/navbar";
-import CardsSection, { CardsSectionProps } from "../components/cardsSection";
-import { CardSizeEnum } from "../components/card";
+import CardsSection from "../components/cardsSection";
+import { getSections, Section } from "../lib/sections";
 
 type HomeProps = {
-  sections: CardsSectionProps[];
+  sections: Section[];
 };
 
 export const getStaticProps = async (): Promise<
   GetStaticPropsResult<HomeProps>
 > => {
-  return {
-    props: {
-      sections: [
-        {
-          title: "Disney",
-          cardSize: CardSizeEnum.large,
-          cardList: Array(15).fill({
-            imgUrl: "/static/defaultImage.webp",
-          }),
-        },
-        {
-          title: "Disney",
-          cardSize: CardSizeEnum.small,
-          cardList: Array(15).fill({
-            imgUrl: "/static/defaultImage.webp",
-          }),
-        },
-        {
-          title: "Disney",
-          cardSize: CardSizeEnum.medium,
-          cardList: Array(15).fill({
-            imgUrl: "/static/defaultImage.webp",
-          }),
-        },
-      ],
-    },
-  };
+  try {
+    const sections = await getSections();
+    return {
+      props: {
+        sections,
+      },
+    };
+  } catch (error) {
+    console.error(
+      "Error in getStaticProps for index.tsx: ",
+      (error as Error).message
+    );
+    return {
+      props: {
+        sections: [],
+      },
+    };
+  }
 };
 
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
@@ -88,13 +79,20 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
         />
         <div className={styles.sectionWrapper}>
           {sections.length > 0 &&
-            sections.map((section, index) => {
+            sections.map((section: Section, index: number) => {
+              if (section.error) {
+                console.warn(
+                  `Error in section: ${section.title}`,
+                  section.error
+                );
+                return false;
+              }
               return (
                 <CardsSection
                   key={index}
                   title={section.title}
                   cardSize={section.cardSize}
-                  cardList={section.cardList}
+                  videoList={section.list}
                 />
               );
             })}
