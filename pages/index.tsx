@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { GetStaticPropsResult, NextPage } from "next";
+import type { GetServerSidePropsResult, NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Banner from "../components/Banner";
@@ -11,12 +11,12 @@ type HomeProps = {
   sections: Section[];
 };
 
-export const getStaticProps = async (): Promise<
-  GetStaticPropsResult<HomeProps>
+export const getServerSideProps = async (): Promise<
+GetServerSidePropsResult<HomeProps>
 > => {
   try {
-    // const sections = await getSections();
-    const sections: Section[] = [];
+    const sections = await getSections();
+    // const sections: Section[] = [];
     return {
       props: {
         sections,
