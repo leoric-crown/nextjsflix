@@ -1,6 +1,7 @@
 import { CardSizeEnum } from "../components/Card";
 import { getVideoData, YoutubeVideo } from "./youtube";
 import { YoutubeEndpoint } from "./youtube";
+import sectionsJson from "../data/sections.json";
 
 export type Section = {
   title: string;
@@ -22,6 +23,10 @@ type SectionQuery = {
 };
 
 export const getSections = async () => {
+  if (process.env.DEVELOPMENT) {
+    console.log("IN DEVELOPMENT: Returning sections from sections.json");
+    return sectionsJson as Section[];
+  }
   const sectionQueries: SectionQuery[] = [
     {
       title: "Disney",
