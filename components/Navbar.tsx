@@ -1,4 +1,4 @@
-import React, { BaseSyntheticEvent, useState } from "react";
+import React, { BaseSyntheticEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,7 +13,6 @@ const Navbar: React.FC<NavBarProps> = (props) => {
   const { gradientBackground } = props;
 
   const router = useRouter();
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleOnClickNav = (event: BaseSyntheticEvent, path: string) => {
     event.preventDefault;
@@ -55,10 +54,7 @@ const Navbar: React.FC<NavBarProps> = (props) => {
           </li>
         </ul>
         <nav className={styles.navContainer}>
-          <NavUser
-            user={null}
-            // user={{ name: "someName", id: "someId" }}
-          />
+          <NavUser/>
           
         </nav>
       </div>

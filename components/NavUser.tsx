@@ -1,29 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Image from "next/image";
 import styles from "../styles/navbar.module.css";
-import type { User } from "../lib/types";
+import type { UserData } from "../context/UserContext";
 import { googleSignIn } from "../lib/firebase";
+import { User as FirebaseUser } from "firebase/auth";
+import { UserContext, UserContextActionTypes } from "../context/UserContext";
 
 export type NavUserProps = {
-  user: User | null;
+  user: UserData;
 };
 
-const NavUser = ({ user }: NavUserProps) => {
-  const handleSignIn = () => {
-    console.log("handling sign in");
-    googleSignIn();
-    console.log('in NavUser', { user });
-    return [];
+const NavUser = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { state: userState, dispatch: userDispatch } =
+    useContext(UserContext);
+
+  const { user } = userState;
+
+  const handleSignIn = async () => {
+    try {
+      const firebaseUser: FirebaseUser = await googleSignIn();
+      const user: UserData = {
+        uid: firebaseUser.uid,
+        name: firebaseUser.displayName as string,
+        email: firebaseUser.email as string,
+      };
+
+      userDispatch({
+        type: UserContextActionTypes.SetUser,
+        payload: user,
+      });
+    } catch (error) {
+      console.error(
+        "There was an error in handleSignIn: ",
+        (error as Error).message
+      );
+    }
   };
 
-  const [showDropdown, setShowDropdown] = useState(false);
+  const handleSignOut = () => {
+    setShowDropdown(false);
+    userDispatch({
+      type: UserContextActionTypes.SetUser,
+      payload: null,
+    });
+  };
+
   return (
     <div>
-      {!user?.id ? (
+      {!user?.uid ? (
         <button className={styles.usernameBtn} onClick={handleSignIn}>
-          <div className={styles.username} onClick={handleSignIn}>
-            Sign In
-          </div>
+          <div className={styles.username}>Sign In</div>
         </button>
       ) : (
         <button
@@ -42,7 +69,9 @@ const NavUser = ({ user }: NavUserProps) => {
       {showDropdown && (
         <div className={styles.navDropdown}>
           <div>
-            <div className={styles.linkName}>Sign Out</div>
+            <div className={styles.linkName} onClick={handleSignOut}>
+              Sign Out
+            </div>
           </div>
         </div>
       )}

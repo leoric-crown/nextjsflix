@@ -1,7 +1,13 @@
 // import firebaseConfig from "./firebaseConfig";
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  User,
+  UserCredential,
+} from "firebase/auth";
+import { getFirestore, addDoc, collection } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAVrDb7yUDBsf6GSewV-XlJzdHe4Yv5KVw",
@@ -13,25 +19,27 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-console.log({firebaseApp})
+console.log({ firebaseApp });
 
 export const auth = getAuth(firebaseApp);
 export const firestore = getFirestore(firebaseApp);
 
+const collectionRef = collection(firestore, "usernames");
+addDoc(collectionRef, { contents: "someData" + Date.now().toString() });
+
 const googleProvider = new GoogleAuthProvider();
 
 export const googleSignIn = async () => {
-  const user = await signInWithPopup(auth, googleProvider)
-    .then((user) => {
-      console.log(user);
-      return user;
-    })
-    .catch((error) => {
-      console.error('Error in googleSignIn', error);
-      return null;
-    });
-
-  return user;
+  return await signInWithPopup(auth, googleProvider)
+  .then((credential: UserCredential) => {
+    const user: User = credential.user
+    return user
+  })
+  .catch(error => {
+    console.error(error)
+    throw error
+  })
+  // return userCredential as UserCredential;
 };
 
 export default firebaseApp;

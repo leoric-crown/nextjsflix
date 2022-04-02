@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import UserContextProvider from "../context/UserContext";
+import Loader from "../components/Loader";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -19,8 +21,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       router.events.off("routeChangeError", handleComplete);
     };
   });
-
-  return loading ? false : <Component {...pageProps} />;
+  return (
+    <UserContextProvider>
+      {loading ? <Loader/> : <Component {...pageProps} />}
+    </UserContextProvider>
+  );
 }
 
 export default MyApp;
