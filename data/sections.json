@@ -1,7 +1,7 @@
 [
   {
     "title": "Disney",
-    "cardSize": "small",
+    "cardSize": "large",
     "list": [
       {
         "title": "Turning Red | Official Trailer",
@@ -1573,7 +1573,7 @@
   },
   {
     "title": "Music Production",
-    "cardSize": "small",
+    "cardSize": "medium",
     "list": [
       {
         "title": "How I Taught Myself Music Production | 5 Music Production Secrets",
@@ -2356,7 +2356,7 @@
   },
   {
     "title": "Popular Videos",
-    "cardSize": "small",
+    "cardSize": "large",
     "list": [
       {
         "title": "North Carolina vs. Duke - Final Four NCAA tournament extended highlights",

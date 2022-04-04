@@ -106,7 +106,7 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
             sections.map((section: Section, index: number) => {
               if (section.error) {
                 console.warn(
-                  `Error in section: ${section.title}`,
+                  `Error in index.tsx, rendering section: ${section.title}`,
                   section.error
                 );
                 return false;

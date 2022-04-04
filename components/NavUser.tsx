@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import styles from "../styles/navbar.module.css";
 import { useAuth } from "../hooks/useAuth";
+import { useRouter } from "next/router";
 
 const NavUser = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const router = useRouter()
 
   const { user, loading, signIn, signOut } = useAuth();
 
@@ -15,6 +17,7 @@ const NavUser = () => {
   const handleSignOut = () => {
     setShowDropdown(false);
     signOut();
+    router.push("/")
   };
 
   return (

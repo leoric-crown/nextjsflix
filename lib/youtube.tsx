@@ -1,3 +1,17 @@
+type ImgUrl = {
+  url: string;
+  width: number;
+  height: number;
+};
+
+export type ImgUrls = {
+  default: ImgUrl;
+  medium: ImgUrl;
+  high: ImgUrl;
+  standard: ImgUrl;
+  maxres: ImgUrl;
+};
+
 export type YoutubeVideo = {
   title: string;
   imgUrls: ImgUrls;
@@ -8,34 +22,6 @@ export type YoutubeVideo = {
 
   publishTime: string;
   viewCount: number;
-};
-
-export type ImgUrls = {
-  default: {
-    url: string;
-    width: number;
-    height: number;
-  };
-  medium: {
-    url: string;
-    width: number;
-    height: number;
-  };
-  high: {
-    url: string;
-    width: number;
-    height: number;
-  };
-  standard: {
-    url: string;
-    width: number;
-    height: number;
-  };
-  maxres: {
-    url: string;
-    width: number;
-    height: number;
-  };
 };
 
 export enum ImgQuality {
@@ -55,13 +41,13 @@ const qualityRank = [
 ];
 
 export const getImgUrl = (quality: ImgQuality, imgUrls: ImgUrls) => {
-  const index = qualityRank.indexOf(quality)
-  if(index > -1) {
-    for(let i = index; i>=0; i--) {
-      if(imgUrls[qualityRank[i]]) return imgUrls[qualityRank[i]].url
+  const index = qualityRank.indexOf(quality);
+  if (index > -1) {
+    for (let i = index; i >= 0; i--) {
+      if (imgUrls[qualityRank[i]]) return imgUrls[qualityRank[i]].url;
     }
   }
-  return "/static/defaultImage.webp"
+  return "/static/defaultImage.webp";
 };
 
 export enum YoutubeEndpoint {
