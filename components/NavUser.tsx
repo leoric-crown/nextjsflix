@@ -1,63 +1,43 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import styles from "../styles/navbar.module.css";
-import type { UserData } from "../context/UserContext";
-import { googleSignIn } from "../lib/firebase";
-import { User as FirebaseUser } from "firebase/auth";
-import { UserContext, UserContextActionTypes } from "../context/UserContext";
-
-export type NavUserProps = {
-  user: UserData;
-};
+import { useAuth } from "../hooks/useAuth";
 
 const NavUser = () => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { state: userState, dispatch: userDispatch } =
-    useContext(UserContext);
 
-  const { user } = userState;
+  const { user, loading, signIn, signOut } = useAuth();
 
-  const handleSignIn = async () => {
-    try {
-      const firebaseUser: FirebaseUser = await googleSignIn();
-      const user: UserData = {
-        uid: firebaseUser.uid,
-        name: firebaseUser.displayName as string,
-        email: firebaseUser.email as string,
-      };
-
-      userDispatch({
-        type: UserContextActionTypes.SetUser,
-        payload: user,
-      });
-    } catch (error) {
-      console.error(
-        "There was an error in handleSignIn: ",
-        (error as Error).message
-      );
-    }
+  const handleSignIn = () => {
+    signIn();
   };
 
   const handleSignOut = () => {
     setShowDropdown(false);
-    userDispatch({
-      type: UserContextActionTypes.SetUser,
-      payload: null,
-    });
+    signOut();
   };
 
   return (
     <div>
       {!user?.uid ? (
         <button className={styles.usernameBtn} onClick={handleSignIn}>
-          <div className={styles.username}>Sign In</div>
+          <div className={styles.username}>
+            {loading ? "Loading..." : "Sign In"}
+          </div>
         </button>
       ) : (
         <button
           className={styles.usernameBtn}
           onClick={() => setShowDropdown(!showDropdown)}
         >
-          <div className={styles.username}>{user?.name}</div>
+          <Image
+            className={styles.userPhoto}
+            src={user?.photoURL as string}
+            alt="User Photo"
+            width="32px"
+            height="32px"
+          />
+          <div className={styles.username}>{user?.email}</div>
           <Image
             src="/static/expand_more.svg"
             alt="Expand dropdown"

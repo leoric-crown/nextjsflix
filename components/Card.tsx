@@ -20,12 +20,13 @@ const classMap = {
 export interface CardProps {
   imgUrl: string;
   size: CardSizeEnum;
-  id?: number;
+  link?: string;
+  index?: number;
 }
 
 const Card: React.FC<CardProps> = (props) => {
   const {
-    id,
+    index,
     size = CardSizeEnum.medium,
     imgUrl = "/static/defaultImage.webp",
   } = props;
@@ -37,7 +38,7 @@ const Card: React.FC<CardProps> = (props) => {
     setImgSrc("/static/defaultImage.webp");
   };
 
-  const motionScale = id === 0 ? { scaleY: 1.1 } : { scale: 1.1 };
+  const motionScale = index === 0 ? { scaleY: 1.1 } : { scale: 1.1 };
 
   return (
     <div className={styles.container}>
@@ -56,21 +57,5 @@ const Card: React.FC<CardProps> = (props) => {
     </div>
   );
 };
-
-// interface Context extends NextPageContext {
-//     // any modifications to the default context, e.g. query types
-// }
-
-// export const getStaticProps = async (
-//   context: NextPageContext
-// ): Promise<GetStaticPropsResult<CardProps>> => {
-//   return {
-//     props: {
-//       name: "hi",
-//       imgUrl: "hi",
-//       size: SizeEnum.medium,
-//     },
-//   };
-// };
 
 export default Card;

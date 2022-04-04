@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import UserContextProvider from "../context/UserContext";
+import { AuthContextProvider } from "../hooks/useAuth";
 import Loader from "../components/Loader";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -22,9 +22,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
   });
   return (
-    <UserContextProvider>
+    <AuthContextProvider>
       {loading ? <Loader/> : <Component {...pageProps} />}
-    </UserContextProvider>
+    </AuthContextProvider>
   );
 }
 

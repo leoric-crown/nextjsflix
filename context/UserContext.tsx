@@ -1,4 +1,5 @@
 import React, { createContext, useReducer } from "react";
+import { auth } from "../lib/firebase";
 
 type UserWithData = {
   uid: string;
@@ -9,14 +10,20 @@ type UserWithData = {
 export type UserData = UserWithData | null;
 
 export enum UserContextActionTypes {
-  SetUser,
+  SignIn,
+  SignOut,
 }
 
-export interface SetUser {
-  type: UserContextActionTypes.SetUser;
+export interface SignIn {
+  type: UserContextActionTypes.SignIn;
   payload: UserData;
 }
-export type UserContextAction = SetUser;
+
+export interface SignOut {
+  type: UserContextActionTypes.SignOut;
+}
+
+export type UserContextAction = SignIn | SignOut;
 
 export type UserContextState = {
   user: UserData;
@@ -31,8 +38,12 @@ const userContextReducer = (
   action: UserContextAction
 ) => {
   switch (action.type) {
-    case UserContextActionTypes.SetUser:
+    case UserContextActionTypes.SignIn:
       return { user: action.payload };
+    case UserContextActionTypes.SignOut:
+      console.log("signing out!");
+      auth.signOut();
+      return { user: null };
     default:
       throw new Error(`Unhandled action ${action}`);
   }
@@ -48,7 +59,9 @@ export const UserContext = createContext<{
 
 const UserContextProvider = ({ children }: { children: JSX.Element }) => {
   const [state, dispatch] = useReducer(userContextReducer, INITIAL_STATE);
-
+  console.log('IN USERCONTEXT.TS')
+  console.log({ currentUser: auth.currentUser });
+  console.log(!!auth.currentUser);
   return (
     <UserContext.Provider value={{ state, dispatch }}>
       {children}

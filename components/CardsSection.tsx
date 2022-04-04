@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { YoutubeVideo } from "../lib/youtube";
 import styles from "../styles/cards-section.module.css";
@@ -81,14 +82,17 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
         </div>
         <div className={styles.cardWrapper} ref={scrollRef}>
           {videoList?.length > 0 &&
-            videoList.map((card, index) => {
+            videoList.map((video, index) => {
               return (
-                <Card
-                  key={index}
-                  id={index}
-                  size={cardSize}
-                  imgUrl={card.imgUrl}
-                />
+                  <Link key = {index} href={`/video/${video.id}`}>
+                    <a>
+                      <Card
+                        index={index}
+                        size={cardSize}
+                        imgUrl={video.imgUrl}
+                      />
+                    </a>
+                  </Link>
               );
             })}
         </div>

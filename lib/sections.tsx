@@ -27,6 +27,7 @@ export const getSections = async () => {
     console.log("IN DEVELOPMENT: Returning sections from sections.json");
     return sectionsJson as Section[];
   }
+
   const sectionQueries: SectionQuery[] = [
     {
       title: "Disney",

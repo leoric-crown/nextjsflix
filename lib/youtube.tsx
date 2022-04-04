@@ -5,16 +5,21 @@ export type YoutubeVideo = {
   id: string;
   channelTitle: string;
   channelId: string;
+
+  publishTime: string;
+  viewCount: number;
 };
 
 export enum YoutubeEndpoint {
   search = "https://youtube.googleapis.com/youtube/v3/search?part=snippet",
   popular = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet" +
     "%2CcontentDetails%2Cstatistics&chart=mostPopular",
+  byVideoIds = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics",
 }
 
 export type QueryParameters = {
   endpoint: YoutubeEndpoint;
+  id?: string;
   query?: string;
   maxResults?: number;
   regionCode?: string;
@@ -27,10 +32,21 @@ const fetchYoutubeVideosData = async (queryParameters: QueryParameters) => {
       query,
       maxResults = 30,
       regionCode = "US",
+      id,
     } = queryParameters;
     const { YOUTUBE_DATA_API_KEY } = process.env;
 
-    const generateQueryUrl = ({ endpoint, ...parameters }: QueryParameters) => {
+    const getSuffix = (parameters: object) => {
+      let suffix = "";
+      Object.entries(parameters).forEach(([key, value]) => {
+        if (value && key !== "query") {
+          suffix += `&${key}=${value}`;
+        }
+      });
+      return suffix;
+    };
+
+    const getQueryUrl = ({ endpoint, ...parameters }: QueryParameters) => {
       let queryUrl = endpoint as string;
       switch (endpoint) {
         case YoutubeEndpoint.search:
@@ -39,22 +55,23 @@ const fetchYoutubeVideosData = async (queryParameters: QueryParameters) => {
               queryUrl += `&${key === "query" ? "q" : key}=${value}`;
             }
           });
-          return queryUrl;
+          break;
         case YoutubeEndpoint.popular:
-          Object.entries(parameters).forEach(([key, value]) => {
-            if (value && key !== "query") {
-              queryUrl += `&${key}=${value}`;
-            }
-          });
-          return queryUrl;
+          queryUrl = queryUrl + getSuffix(parameters);
+          break;
+        case YoutubeEndpoint.byVideoIds:
+          queryUrl = queryUrl + getSuffix(parameters);
+          break;
       }
+      return queryUrl;
     };
 
-    const queryUrl = generateQueryUrl({
+    const queryUrl = getQueryUrl({
       endpoint,
       query,
       maxResults,
       regionCode,
+      id,
     });
     console.log("youtube:tsx || Fetching from: ", queryUrl);
     const response = await fetch(queryUrl + `&key=${YOUTUBE_DATA_API_KEY}`);
@@ -80,6 +97,10 @@ type item = {
     description: string;
     channelTitle: string;
     channelId: string;
+    publishedAt: string;
+  };
+  statistics: {
+    viewCount: string;
   };
 };
 
@@ -93,6 +114,8 @@ const getVideoDataFromItems = (items: item[]) => {
         id: item?.id?.videoId || item?.id || null,
         channelTitle: item?.snippet?.channelTitle || null,
         channelId: item?.snippet?.channelId || null,
+        publishTime: item?.snippet?.publishedAt || null,
+        viewCount: parseInt(item?.statistics?.viewCount) || null,
       } as YoutubeVideo;
     })
     .filter((item) => {

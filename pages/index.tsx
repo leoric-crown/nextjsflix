@@ -12,11 +12,10 @@ type HomeProps = {
 };
 
 export const getServerSideProps = async (): Promise<
-GetServerSidePropsResult<HomeProps>
+  GetServerSidePropsResult<HomeProps>
 > => {
   try {
     const sections = await getSections();
-    // const sections: Section[] = [];
     return {
       props: {
         sections,
@@ -36,7 +35,7 @@ GetServerSidePropsResult<HomeProps>
 };
 
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
-  const [isBannerVisible, setIsBannerVisible] = useState(true);
+  const [isBannerTransparent, setIsBannerTransparent] = useState(true);
   const { sections } = props;
 
   const bannerRef = useRef<HTMLInputElement>(null);
@@ -44,12 +43,21 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const { isIntersecting } = entries[0];
+        const { intersectionRatio } = entries[0];
 
-        if (isIntersecting !== isBannerVisible)
-          setIsBannerVisible(isIntersecting);
+        if (intersectionRatio !== 1 && isBannerTransparent) {
+          setIsBannerTransparent(false);
+          return;
+        }
+        if (intersectionRatio === 1 && !isBannerTransparent) {
+          setIsBannerTransparent(true);
+          return;
+        }
       },
-      { root: null, threshold: [0, 1] }
+      {
+        root: null,
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+      }
     );
     const currentRef = bannerRef.current;
     if (currentRef) observer.observe(currentRef as Element);
@@ -71,11 +79,12 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
       </Head>
 
       <div className={styles.main}>
-        <Navbar gradientBackground={isBannerVisible} />
+        <Navbar gradientBackground={isBannerTransparent} />
         <Banner
           title="Harry Potter"
           subTitle="You're a wizard Harry!"
           imgUrl="/static/harry-potter.webp"
+          videoId="XdKzUbAiswE"
           ref={bannerRef}
         />
         <div className={styles.sectionWrapper}>
