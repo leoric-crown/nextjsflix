@@ -1,6 +1,6 @@
 export type YoutubeVideo = {
   title: string;
-  imgUrl: string;
+  imgUrls: ImgUrls;
   description: string;
   id: string;
   channelTitle: string;
@@ -8,6 +8,60 @@ export type YoutubeVideo = {
 
   publishTime: string;
   viewCount: number;
+};
+
+export type ImgUrls = {
+  default: {
+    url: string;
+    width: number;
+    height: number;
+  };
+  medium: {
+    url: string;
+    width: number;
+    height: number;
+  };
+  high: {
+    url: string;
+    width: number;
+    height: number;
+  };
+  standard: {
+    url: string;
+    width: number;
+    height: number;
+  };
+  maxres: {
+    url: string;
+    width: number;
+    height: number;
+  };
+};
+
+export enum ImgQuality {
+  default = "default",
+  medium = "medium",
+  high = "high",
+  standard = "standard",
+  maxres = "maxres",
+}
+
+const qualityRank = [
+  ImgQuality.default,
+  ImgQuality.medium,
+  ImgQuality.high,
+  ImgQuality.standard,
+  ImgQuality.maxres,
+];
+
+export const getImgUrl = (quality: ImgQuality, imgUrls: ImgUrls) => {
+  const index = qualityRank.indexOf(quality)
+  if(index > -1) {
+    for(let i = index; i>=0; i--) {
+      if(imgUrls[qualityRank[i]]) return imgUrls[qualityRank[i]].url
+    }
+  }
+  return "/static/defaultImage.webp"
 };
 
 export enum YoutubeEndpoint {
@@ -93,7 +147,7 @@ type item = {
   id: { videoId: string };
   snippet: {
     title: string;
-    thumbnails: { high: { url: string } };
+    thumbnails: ImgUrls;
     description: string;
     channelTitle: string;
     channelId: string;
@@ -109,7 +163,7 @@ const getVideoDataFromItems = (items: item[]) => {
     .map((item) => {
       return {
         title: item?.snippet?.title || null,
-        imgUrl: item?.snippet?.thumbnails?.high?.url || null,
+        imgUrls: item?.snippet?.thumbnails || null,
         description: item?.snippet?.description || null,
         id: item?.id?.videoId || item?.id || null,
         channelTitle: item?.snippet?.channelTitle || null,
@@ -119,7 +173,7 @@ const getVideoDataFromItems = (items: item[]) => {
       } as YoutubeVideo;
     })
     .filter((item) => {
-      return !!item.id && !!item.title && !!item.imgUrl;
+      return !!item.id && !!item.title && !!item.imgUrls;
     }) as YoutubeVideo[];
 };
 

@@ -27,7 +27,7 @@ export const googleSignIn = async () => {
       return credential.user as User;
     })
     .catch((error) => {
-      console.error("There was an error in firebase/googleSignin: ", error);
+      console.error("There was an error in useAuth/googleSignin: ", error);
       throw error;
     });
 };
@@ -53,7 +53,7 @@ export const AuthContextProvider = ({
   const [loading, setLoading] = useState(true);
 
   const signIn = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const newUser: User = await googleSignIn();
       setUser(newUser);
@@ -80,9 +80,7 @@ export const AuthContextProvider = ({
   });
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, signIn, signOut }}
-    >
+    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

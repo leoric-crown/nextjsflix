@@ -87,9 +87,10 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
                   <Link key = {index} href={`/video/${video.id}`}>
                     <a>
                       <Card
+                        title={video.title}
                         index={index}
                         size={cardSize}
-                        imgUrl={video.imgUrl}
+                        imgUrls={video.imgUrls}
                       />
                     </a>
                   </Link>

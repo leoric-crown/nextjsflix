@@ -6,9 +6,11 @@ import Banner from "../components/Banner";
 import Navbar from "../components/Navbar";
 import CardsSection from "../components/CardsSection";
 import { getSections, Section } from "../lib/sections";
+import { getImgUrl, ImgQuality, YoutubeVideo } from "../lib/youtube";
 
 type HomeProps = {
   sections: Section[];
+  bannerVideo: YoutubeVideo | null;
 };
 
 export const getServerSideProps = async (): Promise<
@@ -16,19 +18,31 @@ export const getServerSideProps = async (): Promise<
 > => {
   try {
     const sections = await getSections();
+
+    // const allVideos = sections
+    //   .map((section) => section.list)
+    //   .reduce((acc, current) => {
+    //     return [...current, ...acc];
+    //   });
+
+    const bannerVideo =
+      sections[0].list[Math.floor(Math.random() * sections[0].list.length)];
+
     return {
       props: {
         sections,
+        bannerVideo,
       },
     };
   } catch (error) {
     console.error(
-      "Error in getStaticProps for index.tsx: ",
+      "Error in getServersiderops for index.tsx: ",
       (error as Error).message
     );
     return {
       props: {
         sections: [],
+        bannerVideo: null,
       },
     };
   }
@@ -36,7 +50,7 @@ export const getServerSideProps = async (): Promise<
 
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
   const [isBannerTransparent, setIsBannerTransparent] = useState(true);
-  const { sections } = props;
+  const { sections, bannerVideo } = props;
 
   const bannerRef = useRef<HTMLInputElement>(null);
 
@@ -81,10 +95,10 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
       <div className={styles.main}>
         <Navbar gradientBackground={isBannerTransparent} />
         <Banner
-          title="Harry Potter"
-          subTitle="You're a wizard Harry!"
-          imgUrl="/static/harry-potter.webp"
-          videoId="XdKzUbAiswE"
+          title={bannerVideo?.title as string}
+          subTitle={bannerVideo?.channelTitle as string}
+          imgUrl={bannerVideo?.imgUrls ? getImgUrl(ImgQuality.maxres, bannerVideo.imgUrls) : ''}
+          videoId={bannerVideo?.id as string}
           ref={bannerRef}
         />
         <div className={styles.sectionWrapper}>

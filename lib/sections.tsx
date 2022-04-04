@@ -2,6 +2,7 @@ import { CardSizeEnum } from "../components/Card";
 import { getVideoData, YoutubeVideo } from "./youtube";
 import { YoutubeEndpoint } from "./youtube";
 import sectionsJson from "../data/sections.json";
+// import fs from "fs";
 
 export type Section = {
   title: string;
@@ -77,6 +78,15 @@ export const getSections = async () => {
         });
       })
     );
+
+    // fs.writeFile(
+    //   "./my-sections.json",
+    //   JSON.stringify(sections),
+    //   "utf8",
+    //   (err) => {
+    //     console.log({ err });
+    //   }
+    // );
 
     return sections as Section[];
   } catch (error) {
