@@ -72,6 +72,7 @@ export const AuthContextProvider = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+      newUser?.getIdToken().then((token) => console.log(token));
       setUser(newUser);
       setLoading(false);
     });
