@@ -1,12 +1,19 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+// import * as admin from "firebase-admin";
 import * as express from "express";
 import {
   ApolloServer,
   AuthenticationError,
-  ForbiddenError,
+  // ForbiddenError,
   gql,
 } from "apollo-server-express";
+import {
+  addStats,
+  getDocsFromQuerySnapshot,
+  queryStatsByUserAndVideoId,
+  setStats,
+  verifyToken,
+} from "./firebase";
 
 const typeDefs = gql`
   type Stats {
@@ -47,17 +54,6 @@ type StatsInput = {
   watched: boolean;
 };
 
-admin.initializeApp();
-const firestore = admin.firestore();
-const statsRef = firestore.collection("stats");
-
-const queryStatsByUserAndVideoId = async (userId: string, videoId: string) => {
-  const query = statsRef
-    .where("userId", "==", userId)
-    .where("videoId", "==", videoId);
-  const querySnapshot = await query.get();
-  return querySnapshot;
-};
 const resolvers = {
   Query: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,9 +71,9 @@ const resolvers = {
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
 
       if (querySnapshot.size > 0) {
-        let data = {};
-        querySnapshot.forEach((doc) => (data = doc.data()));
-        return data;
+        const docs = getDocsFromQuerySnapshot(querySnapshot);
+        console.log("got docs in index: ", { docs });
+        return docs[0].data;
       }
       return null;
     },
@@ -90,6 +86,8 @@ const resolvers = {
           "Valid authentication token not provided."
         );
       }
+
+      console.log({ decoded: context.decodedToken });
       // TODO: Figure out how to do the check above for all resolvers without
       // having to repeat code
 
@@ -101,27 +99,17 @@ const resolvers = {
       } = input;
 
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
-
+      console.log({ querySnapshot, size: querySnapshot.size });
       if (querySnapshot.size > 0) {
-        let update = {};
-        let docId = "";
-        let authError = false;
-        querySnapshot.forEach((doc) => {
-          if (doc.data().userId !== context.userId) {
-            authError = true;
-          }
-          docId = doc.id;
-          update = {
-            ...doc.data(),
-            likeDislike,
-            watched,
-          };
-        });
-
-        if (authError) return new ForbiddenError("Insufficient permissions");
-        // TODO: implement the above authorization check via Firestore Rules
+        const docs = getDocsFromQuerySnapshot(querySnapshot);
+        const docId = docs[0].docId;
+        const update = {
+          ...docs[0].data,
+          likeDislike,
+          watched,
+        };
         try {
-          await statsRef.doc(docId).set(update);
+          await setStats(docId, update);
           return update;
         } catch (error) {
           console.error((error as Error).message);
@@ -135,7 +123,7 @@ const resolvers = {
           likeDislike,
           watched,
         };
-        await statsRef.add(newStats);
+        await addStats(newStats);
         return newStats;
       } catch (error) {
         console.error((error as Error).message);
@@ -146,17 +134,27 @@ const resolvers = {
 };
 
 const authenticate: express.RequestHandler = async (req, res, next) => {
-  try {
-    const user = await admin
-      .auth()
-      .verifyIdToken(req.headers.authorization as string);
-    res.locals.userId = user.user_id;
+  const verifiedUser = await verifyToken(req.headers.authorization as string);
+  if (verifiedUser) {
+    res.locals.userId = verifiedUser.user_id;
     res.locals.authenticated = true;
-  } catch (error) {
+    res.locals.decodedToken = verifiedUser;
+  } else {
     res.locals.authenticated = false;
-  } finally {
-    next();
   }
+  next();
+  // try {
+  //   const user = await admin
+  //     .auth()
+  //     .verifyIdToken(req.headers.authorization as string);
+
+  //   res.locals.userId = user.user_id;
+  //   res.locals.authenticated = true;
+  // } catch (error) {
+  //   res.locals.authenticated = false;
+  // } finally {
+  //   next();
+  // }
 };
 
 const app = express();
@@ -164,10 +162,10 @@ app.use(authenticate);
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   context: ({ res }) => ({
     userId: res.locals.userId,
     authenticated: res.locals.authenticated,
+    decodedToken: res.locals.decodedToken,
   }),
 });
 server.start().then(() => {

@@ -1,4 +1,3 @@
-// import firebaseConfig from "./firebaseConfig";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import firebaseConfig from "../firebaseConfig";
