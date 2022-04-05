@@ -5,10 +5,10 @@ import {
   setStats,
 } from "./firebase";
 import {
-    AuthenticationError,
-    // ForbiddenError,
-    gql,
-  } from "apollo-server-express";
+  AuthenticationError,
+  // ForbiddenError,
+  gql,
+} from "apollo-server-express";
 
 export const typeDefs = gql`
   type Stats {
@@ -23,7 +23,6 @@ export const typeDefs = gql`
     NONE
   }
   input StatsInput {
-    userId: ID!
     videoId: ID!
     likeDislike: LikeDislike
     watched: Boolean
@@ -43,7 +42,6 @@ enum LikeDislike {
 }
 
 type StatsInput = {
-  userId: string;
   videoId: string;
   likeDislike: LikeDislike;
   watched: boolean;
@@ -61,7 +59,9 @@ export const resolvers = {
       // TODO: Figure out how to do the check above for all resolvers without
       // having to repeat code
 
-      const { userId, videoId } = input;
+      const { videoId } = input;
+      const { userId } = context;
+      console.log("got userId from context: ", userId);
 
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
 
@@ -84,11 +84,13 @@ export const resolvers = {
       // having to repeat code
 
       const {
-        userId,
         videoId,
         likeDislike = LikeDislike.none,
         watched = false,
       } = input;
+
+      const { userId } = context;
+      console.log("got userId from context: ", userId);
 
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
       if (querySnapshot.size > 0) {
