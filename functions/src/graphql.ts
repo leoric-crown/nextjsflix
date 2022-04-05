@@ -9,6 +9,7 @@ import {
   // ForbiddenError,
   gql,
 } from "apollo-server-express";
+import { rule, shield } from "graphql-shield";
 
 export const typeDefs = gql`
   type Stats {
@@ -47,21 +48,26 @@ type StatsInput = {
   watched: boolean;
 };
 
+const isAuthenticated = rule()((parent, args, context) => {
+  console.log("in isAuthenticated: ", context.authenticated);
+  return context.authenticated;
+});
+
+export const permissions = shield({
+  Query: {
+    stats: isAuthenticated,
+  },
+  Mutation: {
+    stats: isAuthenticated,
+  },
+});
+
 export const resolvers = {
   Query: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stats: async (_: any, { input }: { input: StatsInput }, context: any) => {
-      if (!context.authenticated) {
-        return new AuthenticationError(
-          "Valid authentication token not provided."
-        );
-      }
-      // TODO: Figure out how to do the check above for all resolvers without
-      // having to repeat code
-
       const { videoId } = input;
       const { userId } = context;
-      console.log("got userId from context: ", userId);
 
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
 
@@ -75,14 +81,6 @@ export const resolvers = {
   Mutation: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stats: async (_: any, { input }: { input: StatsInput }, context: any) => {
-      if (!context.authenticated) {
-        return new AuthenticationError(
-          "Valid authentication token not provided."
-        );
-      }
-      // TODO: Figure out how to do the check above for all resolvers without
-      // having to repeat code
-
       const {
         videoId,
         likeDislike = LikeDislike.none,
@@ -90,7 +88,6 @@ export const resolvers = {
       } = input;
 
       const { userId } = context;
-      console.log("got userId from context: ", userId);
 
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
       if (querySnapshot.size > 0) {
