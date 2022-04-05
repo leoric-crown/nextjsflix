@@ -2,7 +2,8 @@ import * as functions from "firebase-functions";
 import * as express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { verifyToken } from "./firebase";
-import { typeDefs, resolvers, permissions } from "./graphql";
+import { typeDefs, resolvers } from "./graphql";
+import permissions from "./permissions";
 import { applyMiddleware } from "graphql-middleware";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 

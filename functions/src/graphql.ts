@@ -4,12 +4,7 @@ import {
   queryStatsByUserAndVideoId,
   setStats,
 } from "./firebase";
-import {
-  AuthenticationError,
-  // ForbiddenError,
-  gql,
-} from "apollo-server-express";
-import { rule, shield } from "graphql-shield";
+import { gql } from "apollo-server-express";
 
 export const typeDefs = gql`
   type Stats {
@@ -47,20 +42,6 @@ type StatsInput = {
   likeDislike: LikeDislike;
   watched: boolean;
 };
-
-const isAuthenticated = rule()((parent, args, context) => {
-  console.log("in isAuthenticated: ", context.authenticated);
-  return context.authenticated;
-});
-
-export const permissions = shield({
-  Query: {
-    stats: isAuthenticated,
-  },
-  Mutation: {
-    stats: isAuthenticated,
-  },
-});
 
 export const resolvers = {
   Query: {
