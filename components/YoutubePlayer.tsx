@@ -34,38 +34,43 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = (props) => {
   const { videoId } = props;
 
   const [playbackState, setPlaybackState] = useState(PlaybackStates.unstarted);
+  const [duration, setDuration] = useState(1);
+  const [progress, setProgress] = useState(0);
   const intervalRef = useRef(
     setInterval(() => {
       return;
     })
   );
   const playerRef = useRef(null);
-  const getPlayerData = async (internalPlayer: InternalPlayer) => {
-    const duration = await internalPlayer.getDuration();
-    const currentTime = await internalPlayer.getCurrentTime();
-    const percentage = currentTime / duration;
-    return {
-      currentTime,
-      duration,
-      percentage,
-    };
+
+  const handlePlay = async (internalPlayer: InternalPlayer) => {
+    const videoLength = await internalPlayer.getDuration();
+    setDuration(Math.floor(videoLength));
   };
 
   useEffect(() => {
-    if (playbackState === PlaybackStates.playing) {
-      const interval = setInterval(() => {
-        if (playerRef?.current) {
-          const current: CurrentRef = playerRef.current;
-          getPlayerData(current.getInternalPlayer());
-        }
-      }, 1000);
-      intervalRef.current = interval;
+    const getProgress = async (internalPlayer: InternalPlayer) => {
+      const currentTime = await internalPlayer.getCurrentTime();
+      setProgress(Math.floor(currentTime));
+    };
 
-      return () => clearInterval(interval);
+    if (playbackState === PlaybackStates.playing) {
+      if (playerRef?.current) {
+        const current: CurrentRef = playerRef.current;
+        const internalPlayer = current.getInternalPlayer();
+        handlePlay(internalPlayer);
+        const interval = setInterval(() => {
+          getProgress(internalPlayer);
+        }, 1000);
+        intervalRef.current = interval;
+
+        return () => clearInterval(interval);
+      }
     } else {
       clearInterval(intervalRef.current);
+      if (playbackState === PlaybackStates.ended) setProgress(duration);
     }
-  }, [playbackState]);
+  }, [playbackState, duration, progress]);
 
   return (
     <YouTube
