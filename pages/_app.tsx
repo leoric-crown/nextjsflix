@@ -4,6 +4,26 @@ import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { AuthContextProvider } from "../hooks/useAuth";
 import Loader from "../components/Loader";
+import ApolloClientProvider from "../components/ApolloClientProvider";
+
+// const httpLink = createHttpLink({
+//   uri: "http://localhost:5000/nextjsflixfb/us-central1/graphql",
+// });
+
+// const authLink = setContext((_, { headers }) => {
+//   const token = "sometoken";
+//   return {
+//     headers: {
+//       ...headers,
+//       authorization: token,
+//     },
+//   };
+// });
+
+// const graphqlClient = new ApolloClient({
+//   link: authLink.concat(httpLink),
+//   cache: new InMemoryCache(),
+// });
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -23,7 +43,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
   return (
     <AuthContextProvider>
-      {loading ? <Loader/> : <Component {...pageProps} />}
+      <ApolloClientProvider>
+        {loading ? <Loader /> : <Component {...pageProps} />}
+      </ApolloClientProvider>
     </AuthContextProvider>
   );
 }

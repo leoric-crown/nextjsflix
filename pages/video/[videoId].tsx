@@ -5,30 +5,21 @@ import {
   GetStaticPropsContext,
 } from "next";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import Modal from "react-modal";
 import styles from "../../styles/Video.module.css";
-import YouTube, { Options } from "react-youtube";
 import clsx from "classnames";
 import { getVideoData, YoutubeEndpoint, YoutubeVideo } from "../../lib/youtube";
 import { ParsedUrlQuery } from "querystring";
 import Navbar from "../../components/Navbar";
-import Like from "../../components/icons/LikeIcon";
-import Dislike from "../../components/icons/DislikeIcon";
+import LikeDislike from "../../components/LikeDislike";
 import { useAuth } from "../../hooks/useAuth";
+import YoutubePlayer from "../../components/YoutubePlayer";
 
 Modal.setAppElement("#__next");
 
 type VideoPageProps = {
   video: YoutubeVideo | null;
-};
-
-const youtubeOptions: Options = {
-  playerVars: {
-    // https://developers.google.com/youtube/player_parameters
-    autoplay: 1,
-    controls: 0,
-  },
 };
 
 interface RouteParams extends ParsedUrlQuery {
@@ -63,41 +54,11 @@ export async function getStaticProps(
   };
 }
 
-enum LikeDislikeState {
-  like = "LIKE",
-  dislike = "DISLIKE",
-  none = "NONE",
-}
-
 const VideoPage: NextPage<VideoPageProps> = (props: VideoPageProps) => {
-  const { video } = props;
-  const { user } = useAuth();
   const router = useRouter();
+  const { video } = props;
   const videoId = router.query.videoId as string;
-
-  const [likeDislike, setLikeDislike] = useState(LikeDislikeState.none);
-
-  const handleLikeDislike = (action: LikeDislikeState) => {
-    if (action === likeDislike) setLikeDislike(LikeDislikeState.none);
-    else setLikeDislike(action);
-
-    //make an api call to set the new LikeDislike state
-    //need to get accessToken from user
-    // const response = await fetch(url, {
-    //   method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    //   mode: 'cors', // no-cors, *cors, same-origin
-    //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    //   credentials: 'same-origin', // include, *same-origin, omit
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //     // 'Content-Type': 'application/x-www-form-urlencoded',
-    //   },
-    //   redirect: 'follow', // manual, *follow, error
-    //   referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    //   body: JSON.stringify(data) // body data type must match "Content-Type" header
-    // });
-    // return response.json(); // parses JSON response into native JavaScript objects
-  };
+  const { user } = useAuth();
 
   return (
     <div className={styles.container}>
@@ -111,12 +72,7 @@ const VideoPage: NextPage<VideoPageProps> = (props: VideoPageProps) => {
         className={styles.modal}
         overlayClassName={styles.overlay}
       >
-        <YouTube
-          containerClassName={styles.youtubePlayerWrapper}
-          className={styles.youtubePlayer}
-          videoId={videoId}
-          opts={youtubeOptions}
-        />
+        <YoutubePlayer videoId={videoId} />
         <div className={styles.modalBody}>
           <div className={styles.modalBodyContent}>
             <div className={styles.col1}>
@@ -125,40 +81,7 @@ const VideoPage: NextPage<VideoPageProps> = (props: VideoPageProps) => {
               <p className={styles.description}>{video?.description}</p>
             </div>
             <div className={styles.col2}>
-              {user && (
-                <div className={styles.likeDislikeBtnWrapper}>
-                  <button
-                    onClick={() => handleLikeDislike(LikeDislikeState.like)}
-                    className={styles.btnWrapper}
-                  >
-                    <div>
-                      <Like
-                        fill={
-                          likeDislike === LikeDislikeState.like
-                            ? "var(--green10)"
-                            : "white"
-                        }
-                        selected={likeDislike === LikeDislikeState.like}
-                      />
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => handleLikeDislike(LikeDislikeState.dislike)}
-                    className={styles.btnWrapper}
-                  >
-                    <div>
-                      <Dislike
-                        fill={
-                          likeDislike === LikeDislikeState.dislike
-                            ? "var(--red10)"
-                            : "white"
-                        }
-                        selected={likeDislike === LikeDislikeState.dislike}
-                      />
-                    </div>
-                  </button>
-                </div>
-              )}
+              {user && <LikeDislike videoId={videoId} />}
               <p className={clsx(styles.subText, styles.subTextWrapper)}>
                 <span className={styles.textColor}>Channel: </span>
                 <span className={styles.channelTitle}>

@@ -4,7 +4,7 @@ type LikeProps = {
   fill?: string;
   selected?: boolean;
 };
-const DisLike: React.FC<LikeProps> = ({ fill = "white", selected = false }) => (
+const Dislike: React.FC<LikeProps> = ({ fill = "white", selected = false }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -17,4 +17,4 @@ const DisLike: React.FC<LikeProps> = ({ fill = "white", selected = false }) => (
   </svg>
 );
 
-export default DisLike;
+export default Dislike;

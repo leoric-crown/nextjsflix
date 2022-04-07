@@ -1,0 +1,25 @@
+/** Makes video edges curvy **/
+.youtubePlayerWrapper {
+  border-radius: 10px 10px 0px 0px;
+  background-color: var(--gray40);
+}
+
+.borderBoxShadow {
+  -webkit-box-shadow: 0 3px 7px var(--shadow20);
+  -moz-box-shadow: 0 3px 7px var(--shadow20);
+  box-shadow: 0 3px 7px var(--shadow20);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding-box;
+  background-clip: padding-box;
+  opacity: 1;
+  background: linear-gradient(to top, var(--black10), transparent 50%);
+}
+
+.youtubePlayer {
+  border-radius: 10px 10px 0px 0px;
+  height: 360px;
+  width: 100%;
+  margin: auto;
+  border-radius: 10px 10px 0px 0px;
+  composes: borderBoxShadow;
+}

@@ -23,33 +23,6 @@
   bottom: 0;
 }
 
-/** gives box shadow to the video frame **/
-.borderBoxShadow {
-  -webkit-box-shadow: 0 3px 7px var(--shadow20);
-  -moz-box-shadow: 0 3px 7px var(--shadow20);
-  box-shadow: 0 3px 7px var(--shadow20);
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding-box;
-  background-clip: padding-box;
-  opacity: 1;
-  background: linear-gradient(to top, var(--black10), transparent 50%);
-}
-
-/** Makes video edges curvy **/
-.youtubePlayerWrapper {
-  border-radius: 10px 10px 0px 0px;
-  background-color: var(--gray40);
-}
-
-.youtubePlayer {
-  border-radius: 10px 10px 0px 0px;
-  height: 360px;
-  width: 100%;
-  margin: auto;
-  border-radius: 10px 10px 0px 0px;
-  composes: borderBoxShadow;
-}
-
 /** Modal body **/
 .modalBody {
   padding: 0 3rem;
@@ -119,29 +92,4 @@
     bottom: 40px;
     width: 75%;
   }
-}
-
-/** LikeDislike */
-
-.likeDislikeBtnWrapper {
-  margin-top: 1.5rem;
-  display: flex;
-  margin-bottom: 0.75rem /* 12px */;
-  top: 35%;
-}
-
-.btnWrapper {
-  margin: auto;
-  border-color: var(--white10);
-  border-style: solid;
-  border-width: 2px;
-  background-color: var(--gray40);
-  border-radius: 9999px;
-  padding: 0.5rem /* 8px */;
-  display: flex;
-  justify-content: center;
-}
-
-.likeBtnWrapper {
-  margin-right: 0.5rem /* 8px */;
 }
