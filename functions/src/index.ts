@@ -10,10 +10,12 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 const authenticate: express.RequestHandler = async (req, res, next) => {
   const verifiedUser = await verifyToken(req.headers.authorization as string);
   if (verifiedUser) {
+    console.log("user checks out");
     res.locals.userId = verifiedUser.user_id;
     res.locals.authenticated = true;
     res.locals.decodedToken = verifiedUser;
   } else {
+    console.log("user does not check out");
     res.locals.authenticated = false;
   }
   next();
