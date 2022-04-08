@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { GetServerSidePropsResult, NextPage } from "next";
+import type {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextPage,
+} from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Banner from "../components/Banner";
@@ -13,11 +17,13 @@ type HomeProps = {
   bannerVideo: YoutubeVideo | null;
 };
 
-export const getServerSideProps = async (): Promise<
-  GetServerSidePropsResult<HomeProps>
-> => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+): Promise<GetServerSidePropsResult<HomeProps>> => {
   try {
-    const sections = await getSections();
+    const sections = await getSections(context);
+    console.log("have sections", { sections });
+    console.log("sections[0].error", sections[0].error);
 
     // const allVideos = sections
     //   .map((section) => section.list)
@@ -97,7 +103,11 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
         <Banner
           title={bannerVideo?.title as string}
           subTitle={bannerVideo?.channelTitle as string}
-          imgUrl={bannerVideo?.imgUrls ? getImgUrl(ImgQuality.maxres, bannerVideo.imgUrls) : ''}
+          imgUrl={
+            bannerVideo?.imgUrls
+              ? getImgUrl(ImgQuality.maxres, bannerVideo.imgUrls)
+              : ""
+          }
           videoId={bannerVideo?.id as string}
           ref={bannerRef}
         />

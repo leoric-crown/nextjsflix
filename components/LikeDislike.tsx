@@ -4,13 +4,8 @@ import { useAuth } from "../hooks/useAuth";
 import styles from "../styles/likedislike.module.css";
 import Like from "./icons/LikeIcon";
 import Dislike from "./icons/DislikeIcon";
+import { LikeDislikeState } from "../lib/types";
 
-enum LikeDislikeState {
-  like = "LIKE",
-  dislike = "DISLIKE",
-  none = "NONE",
-  unset = "UNSET",
-}
 
 const GET_VIDEO_LIKEDISLIKE = gql`
   query GetVideoLikeDislike($input: VideoStatsQueryInput) {

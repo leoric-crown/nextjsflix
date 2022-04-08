@@ -25,7 +25,7 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
     if (scrollRef?.current) {
       const { scrollWidth } = scrollRef.current;
 
-      const scrollStep = 800;
+      const scrollStep = 600;
 
       const numSteps = 1 + Math.floor(scrollWidth / scrollStep);
       const stepsArray = Array<number>(numSteps)
@@ -84,16 +84,16 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
           {videoList?.length > 0 &&
             videoList.map((video, index) => {
               return (
-                  <Link key = {index} href={`/video/${video.id}`}>
-                    <a>
-                      <Card
-                        title={video.title}
-                        index={index}
-                        size={cardSize}
-                        imgUrls={video.imgUrls}
-                      />
-                    </a>
-                  </Link>
+                <Link key={index} href={`/video/${video.id}`}>
+                  <a>
+                    <Card
+                      title={video.title}
+                      index={index}
+                      size={cardSize}
+                      imgUrls={video.imgUrls}
+                    />
+                  </a>
+                </Link>
               );
             })}
         </div>

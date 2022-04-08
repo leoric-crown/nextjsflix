@@ -63,6 +63,37 @@ export type QueryParameters = {
   query?: string;
   maxResults?: number;
   regionCode?: string;
+  videoIds?: [string];
+};
+
+const getSuffix = (parameters: object) => {
+  let suffix = "";
+  Object.entries(parameters).forEach(([key, value]) => {
+    if (value && key !== "query") {
+      suffix += `&${key}=${value}`;
+    }
+  });
+  return suffix;
+};
+
+const getQueryUrl = ({ endpoint, ...parameters }: QueryParameters) => {
+  let queryUrl = endpoint as string;
+  switch (endpoint) {
+    case YoutubeEndpoint.search:
+      Object.entries(parameters).forEach(([key, value]) => {
+        if (value) {
+          queryUrl += `&${key === "query" ? "q" : key}=${value}`;
+        }
+      });
+      break;
+    case YoutubeEndpoint.popular:
+      queryUrl = queryUrl + getSuffix(parameters);
+      break;
+    case YoutubeEndpoint.byVideoIds:
+      queryUrl = queryUrl + getSuffix(parameters);
+      break;
+  }
+  return queryUrl;
 };
 
 const fetchYoutubeVideosData = async (queryParameters: QueryParameters) => {
@@ -76,36 +107,6 @@ const fetchYoutubeVideosData = async (queryParameters: QueryParameters) => {
     } = queryParameters;
     const { YOUTUBE_DATA_API_KEY } = process.env;
 
-    const getSuffix = (parameters: object) => {
-      let suffix = "";
-      Object.entries(parameters).forEach(([key, value]) => {
-        if (value && key !== "query") {
-          suffix += `&${key}=${value}`;
-        }
-      });
-      return suffix;
-    };
-
-    const getQueryUrl = ({ endpoint, ...parameters }: QueryParameters) => {
-      let queryUrl = endpoint as string;
-      switch (endpoint) {
-        case YoutubeEndpoint.search:
-          Object.entries(parameters).forEach(([key, value]) => {
-            if (value) {
-              queryUrl += `&${key === "query" ? "q" : key}=${value}`;
-            }
-          });
-          break;
-        case YoutubeEndpoint.popular:
-          queryUrl = queryUrl + getSuffix(parameters);
-          break;
-        case YoutubeEndpoint.byVideoIds:
-          queryUrl = queryUrl + getSuffix(parameters);
-          break;
-      }
-      return queryUrl;
-    };
-
     const queryUrl = getQueryUrl({
       endpoint,
       query,
@@ -115,9 +116,8 @@ const fetchYoutubeVideosData = async (queryParameters: QueryParameters) => {
     });
     console.log("youtube:tsx || Fetching from: ", queryUrl);
     const response = await fetch(queryUrl + `&key=${YOUTUBE_DATA_API_KEY}`);
-
     const json = await response.json();
-
+    console.log({ json });
     if (json.error) throw json.error;
     return json;
   } catch (error) {

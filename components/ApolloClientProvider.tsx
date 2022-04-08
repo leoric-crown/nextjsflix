@@ -9,7 +9,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:5000/nextjsflixfb/us-central1/graphql",
+  uri: process.env.GRAPHQL_URI,
 });
 
 const cache = new InMemoryCache();
