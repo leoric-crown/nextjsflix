@@ -21,18 +21,19 @@ export const typeDefs = gql`
     NONE
   }
   type Stats {
+    id: ID!
     userId: ID!
     videoId: ID!
     likeDislike: LikeDislike
     watched: Boolean
-    progress: Int
-    timestamp: Int
+    progress: Float
+    timestamp: Float
   }
   input StatsInput {
     videoId: ID!
     likeDislike: LikeDislike
     watched: Boolean
-    progress: Int
+    progress: Float
   }
   input VideoStatsQueryInput {
     videoId: ID
@@ -46,11 +47,10 @@ export const typeDefs = gql`
     GREAT
   }
   input NumberQuery {
-    value: Int
+    value: Float
     operator: NumberQueryOperator
   }
   input StatsQueryInput {
-    videoIds: [ID!]
     likeDislike: [LikeDislike]
     watched: Boolean
     progress: NumberQuery
@@ -79,7 +79,7 @@ export const resolvers = {
 
       if (querySnapshot.size > 0) {
         const docs = getDocsFromQuerySnapshot(querySnapshot);
-        return docs[0].data as Stats;
+        return { id: docs[0].id, ...docs[0].data } as Stats;
       }
       return null;
     },
@@ -97,7 +97,7 @@ export const resolvers = {
         const docs = getDocsFromQuerySnapshot(querySnapshot);
         console.log("returning docs with length = ", docs.length);
         console.log({ docs });
-        return docs.map((doc) => doc.data);
+        return docs.map((doc) => ({ id: doc.id, ...doc.data }));
       }
       return [];
     },
@@ -108,28 +108,22 @@ export const resolvers = {
       { input }: { input: StatsInput },
       context: { userId: string }
     ) => {
-      console.log("resolving video mutation", { input, context });
-      const {
-        videoId,
-        likeDislike = LikeDislike.none,
-        watched = false,
-        progress = 0,
-      } = input;
+      console.log("resolving video mutation", { input });
+      const { videoId, ...fields } = input;
       const { userId } = context;
 
       const querySnapshot = await queryStatsByUserAndVideoId(userId, videoId);
       if (querySnapshot.size > 0) {
         const docs = getDocsFromQuerySnapshot(querySnapshot);
-        const docId = docs[0].docId;
+        const docId = docs[0].id;
+
         const update = {
           ...docs[0].data,
-          likeDislike,
-          watched,
-          progress,
-        } as Stats;
+          ...fields,
+        };
         try {
           await setStats(docId, update);
-          return update;
+          return { id: docId, ...update };
         } catch (error) {
           console.error((error as Error).message);
           return error;
@@ -139,12 +133,13 @@ export const resolvers = {
         const newStats = {
           userId,
           videoId,
-          likeDislike,
-          watched,
-          progress,
+          likeDislike: LikeDislike.none,
+          watched: false,
+          progress: 0,
+          ...fields,
         };
-        await addStats(newStats);
-        return newStats;
+        const newDoc = await addStats(newStats);
+        return { id: newDoc.id, ...newStats };
       } catch (error) {
         console.error((error as Error).message);
         return error;

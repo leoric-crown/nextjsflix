@@ -1,5 +1,6 @@
 /** Makes video edges curvy **/
 .youtubePlayerWrapper {
+  height: 45vh;
   border-radius: 10px 10px 0px 0px;
   background-color: var(--gray40);
 }
@@ -17,9 +18,8 @@
 
 .youtubePlayer {
   border-radius: 10px 10px 0px 0px;
-  height: 360px;
+  height: inherit;
   width: 100%;
   margin: auto;
-  border-radius: 10px 10px 0px 0px;
   composes: borderBoxShadow;
 }

@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import firebaseApp from "../lib/firebase";
+import nookies from "nookies";
 
 const auth = initializeAuth(firebaseApp, {
   persistence: browserLocalPersistence,
@@ -67,13 +68,15 @@ export const AuthContextProvider = ({
 
   const signOut = () => {
     auth.signOut();
+    nookies.destroy(undefined, "token")
     setUser(null);
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (newUser) => {
-      await newUser?.getIdToken();
-      if (newUser) newUser.getIdToken().then((token) => console.log(token));
+      const token = await newUser?.getIdToken();
+      console.log("Got token: ", token);
+      nookies.set(undefined, "token", token as string, { path: "/" });
       setUser(newUser);
       setLoading(false);
     });

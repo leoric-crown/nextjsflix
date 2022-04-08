@@ -36,6 +36,7 @@ export type StatsInput = {
 };
 
 export type Stats = {
+  id: string;
   userId: string;
   likeDislike?: LikeDislike;
   watched?: boolean;

@@ -12,17 +12,19 @@ enum LikeDislikeState {
   unset = "UNSET",
 }
 
-const GET_VIDEO_STATS = gql`
-  query GetVideoStats($input: StatsInput) {
+const GET_VIDEO_LIKEDISLIKE = gql`
+  query GetVideoLikeDislike($input: VideoStatsQueryInput) {
     video(input: $input) {
+      id
       likeDislike
     }
   }
 `;
 
-const MUTATE_VIDEO_STATS = gql`
-  mutation MutateVideoStats($input: StatsInput) {
+const MUTATE_VIDEO_LIKEDISLIKE = gql`
+  mutation MutateVideoLikeDislike($input: StatsInput) {
     video(input: $input) {
+      id
       likeDislike
     }
   }
@@ -34,13 +36,16 @@ type LikeDislikeProps = {
 const LikeDislike: React.FC<LikeDislikeProps> = (props) => {
   const { videoId } = props;
   const user = useAuth();
+
   const [likeDislike, setLikeDislike] = useState(LikeDislikeState.unset);
-  const [update, setUpdate] = useState(LikeDislikeState.unset);
-  const { data, error, refetch } = useQuery(GET_VIDEO_STATS, {
-    variables: { input: { videoId: videoId } },
+  const { data, error, refetch } = useQuery(GET_VIDEO_LIKEDISLIKE, {
+    variables: { input: { videoId } },
   });
-  const [postStats] = useMutation(MUTATE_VIDEO_STATS, {
-    variables: { input: { videoId: videoId, likeDislike: update } },
+  const fetchedStats = data ? data.video : null;
+
+  const [update, setUpdate] = useState(LikeDislikeState.unset);
+  const [postStats] = useMutation(MUTATE_VIDEO_LIKEDISLIKE, {
+    variables: { input: { videoId, likeDislike: update } },
   });
 
   useEffect(() => {
@@ -50,10 +55,10 @@ const LikeDislike: React.FC<LikeDislikeProps> = (props) => {
   }, [error, user, refetch]);
 
   useEffect(() => {
-    if (data && data.stats) {
-      setLikeDislike(data.stats.likeDislike);
+    if (fetchedStats) {
+      setLikeDislike(fetchedStats.likeDislike);
     }
-  }, [data]);
+  }, [fetchedStats]);
 
   useEffect(() => {
     if (update !== LikeDislikeState.unset) {

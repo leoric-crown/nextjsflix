@@ -72,7 +72,7 @@ const VideoPage: NextPage<VideoPageProps> = (props: VideoPageProps) => {
         className={styles.modal}
         overlayClassName={styles.overlay}
       >
-        <YoutubePlayer videoId={videoId} />
+        <YoutubePlayer videoId={videoId} isAuth={!!user} />
         <div className={styles.modalBody}>
           <div className={styles.modalBodyContent}>
             <div className={styles.col1}>

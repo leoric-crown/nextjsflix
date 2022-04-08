@@ -31,25 +31,32 @@ export const verifyToken = async (token: string) => {
 export const queryStats = async (userId: string, input: StatsQueryInput) => {
   try {
     console.log("in queryStats");
-    const { likeDislike, watched, progress } = input;
+    const { likeDislike, watched, progress } = input || {};
     console.log({ input });
     let query = statsRef.where("userId", "==", userId);
-    // .where("videoId", "in", videoIds);
     if (likeDislike) {
       console.log("adding likeDislike where clause");
       query = query.where("likeDislike", "in", likeDislike);
     }
-    if (watched) {
+    if (watched !== null && watched !== undefined) {
       console.log("adding watched where clause");
       query = query.where("watched", "==", watched);
     }
     if (progress) {
       const progressOp = numberQueryOperators.get(progress.operator);
       if (progressOp) {
+        if ([">", ">="].includes(progressOp)) {
+          query = query.orderBy("progress", "desc");
+        }
+        if (["<", "<="].includes(progressOp)) {
+          query = query.orderBy("progress", "asc");
+        }
         console.log("adding progress where clause", progressOp, progress.value);
+
         query = query.where("progress", progressOp, progress.value);
       }
     }
+    query = query.orderBy("timestamp", "desc");
 
     const querySnapshot = await query.get();
     return querySnapshot;
@@ -71,14 +78,13 @@ export const queryStatsByUserAndVideoId = async (
 };
 
 export const getDocsFromQuerySnapshot = (querySnapshot: QuerySnapshot) => {
-  const docs: { docId: string; data: object }[] = [];
-  querySnapshot.forEach((doc) =>
-    docs.push({ docId: doc.id, data: doc.data() })
-  );
+  const docs: { id: string; data: object }[] = [];
+  querySnapshot.forEach((doc) => docs.push({ id: doc.id, data: doc.data() }));
   return docs;
 };
 
 export const setStats = async (docId: string, update: object) => {
+  console.log("using setStats to update", { update });
   try {
     const timestamp = FieldValue.serverTimestamp();
     await statsRef.doc(docId).set({ ...update, timestamp }, { merge: true });
@@ -92,9 +98,11 @@ export const setStats = async (docId: string, update: object) => {
 };
 
 export const addStats = async (newStats: object) => {
+  console.log("using addStats to create", { newStats });
   try {
     const timestamp = FieldValue.serverTimestamp();
-    await statsRef.add({ ...newStats, timestamp });
+    const newDoc = await statsRef.add({ ...newStats, timestamp });
+    return newDoc;
   } catch (error) {
     console.error(
       "There was an error in firebase/setStats",
