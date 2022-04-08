@@ -71,7 +71,7 @@ export const resolvers = {
       { input }: { input: VideoStatsQueryInput },
       context: { userId: string }
     ) => {
-      console.log("resolving video query", { input, context });
+      console.log("Resolving video query", { input, context });
       const { videoId } = input;
       const { userId } = context;
 
@@ -88,15 +88,12 @@ export const resolvers = {
       { input }: { input: StatsQueryInput },
       context: { userId: string }
     ) => {
-      console.log("resolving stats query", { input, context });
+      console.log("Resolving stats query", { input, context });
       const { userId } = context;
       const querySnapshot = await queryStats(userId, input);
-      console.log({ querySnapshot });
 
       if (querySnapshot.size > 0) {
         const docs = getDocsFromQuerySnapshot(querySnapshot);
-        console.log("returning docs with length = ", docs.length);
-        console.log({ docs });
         return docs.map((doc) => ({ id: doc.id, ...doc.data }));
       }
       return [];
@@ -108,7 +105,7 @@ export const resolvers = {
       { input }: { input: StatsInput },
       context: { userId: string }
     ) => {
-      console.log("resolving video mutation", { input });
+      console.log("Resolving video mutation", { input });
       const { videoId, ...fields } = input;
       const { userId } = context;
 

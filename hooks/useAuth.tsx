@@ -75,7 +75,6 @@ export const AuthContextProvider = ({
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (newUser) => {
       const token = await newUser?.getIdToken();
-      console.log("Got token: ", token);
       nookies.set(undefined, "token", token as string, { path: "/" });
       setUser(newUser);
       setLoading(false);

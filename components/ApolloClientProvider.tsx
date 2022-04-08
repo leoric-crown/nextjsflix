@@ -32,14 +32,11 @@ const ApolloClientProvider: React.FC = ({ children }) => {
   });
 
   useEffect(() => {
-    console.log("user changed", user);
     if (!user) {
-      console.log("setting empty authorization header");
       setAuthorization("");
     }
     if (user) {
       const newClient = async () => {
-        console.log("getting id token for user: ", { user });
         const token = await user.getIdToken();
         setAuthorization(token);
       };

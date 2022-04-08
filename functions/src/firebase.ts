@@ -30,16 +30,12 @@ export const verifyToken = async (token: string) => {
 
 export const queryStats = async (userId: string, input: StatsQueryInput) => {
   try {
-    console.log("in queryStats");
     const { likeDislike, watched, progress } = input || {};
-    console.log({ input });
     let query = statsRef.where("userId", "==", userId);
     if (likeDislike) {
-      console.log("adding likeDislike where clause");
       query = query.where("likeDislike", "in", likeDislike);
     }
     if (watched !== null && watched !== undefined) {
-      console.log("adding watched where clause");
       query = query.where("watched", "==", watched);
     }
     if (progress) {
@@ -51,7 +47,6 @@ export const queryStats = async (userId: string, input: StatsQueryInput) => {
         if (["<", "<="].includes(progressOp)) {
           query = query.orderBy("progress", "asc");
         }
-        console.log("adding progress where clause", progressOp, progress.value);
 
         query = query.where("progress", progressOp, progress.value);
       }
@@ -84,7 +79,6 @@ export const getDocsFromQuerySnapshot = (querySnapshot: QuerySnapshot) => {
 };
 
 export const setStats = async (docId: string, update: object) => {
-  console.log("using setStats to update", { update });
   try {
     const timestamp = FieldValue.serverTimestamp();
     await statsRef.doc(docId).set({ ...update, timestamp }, { merge: true });
@@ -98,7 +92,6 @@ export const setStats = async (docId: string, update: object) => {
 };
 
 export const addStats = async (newStats: object) => {
-  console.log("using addStats to create", { newStats });
   try {
     const timestamp = FieldValue.serverTimestamp();
     const newDoc = await statsRef.add({ ...newStats, timestamp });

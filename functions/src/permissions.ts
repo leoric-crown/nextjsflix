@@ -1,8 +1,9 @@
 import { shield, rule } from "graphql-shield";
 
 const isAuthenticated = rule()((parent, args, context) => {
-  console.log("in isAuthenticated: ", context.authenticated);
-  console.log("in isAuthenticated: ", { args });
+  console.log("In isAuthenticated, authenticated: ", context.authenticated, {
+    args,
+  });
   return context.authenticated;
 });
 
