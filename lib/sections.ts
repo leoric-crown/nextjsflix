@@ -2,10 +2,17 @@ import { CardSizeEnum } from "../components/Card";
 import { getVideoData, YoutubeVideo } from "./youtube";
 import { YoutubeEndpoint } from "./youtube";
 import getClient from "./ssrGraphQlClient";
-import { gql } from "@apollo/client";
+import { DocumentNode } from "@apollo/client";
 import { GetServerSidePropsContext } from "next";
 import { LikeDislikeState } from "./types";
 import sectionsJson from "../data/sections.json";
+import {
+  GraphQLQueryInput,
+  MyListQuery,
+  MyListQueryInput,
+  WatchedQuery,
+  WatchedQueryInput,
+} from "./graphql";
 // import fs from "fs";
 
 export type Section = {
@@ -28,32 +35,24 @@ type SectionQuery = {
   cardSize: CardSizeEnum;
 };
 
-const getGraphQlData = async (context: GetServerSidePropsContext) => {
+const getGraphQlData = async (
+  context: GetServerSidePropsContext,
+  query: DocumentNode,
+  input: GraphQLQueryInput
+) => {
   const ssrGraphQlClient = getClient(context);
   try {
     const { data } = await ssrGraphQlClient.query({
-      query: gql`
-        query StatsQueryNew($input: StatsQueryInput) {
-          stats(input: $input) {
-            id
-            watched
-            likeDislike
-            videoId
-          }
-        }
-      `,
+      query,
       variables: {
-        input: {
-          watched: true,
-          // likeDislike: ["LIKE", "NONE"],
-        },
+        input,
       },
     });
     return data.stats as Array<{
       id: string;
-      watched: boolean;
-      likeDislike: LikeDislikeState;
-      videoId: string;
+      watched?: boolean;
+      likeDislike?: LikeDislikeState;
+      videoId?: string;
     }>;
   } catch (error) {
     console.error(
@@ -62,57 +61,14 @@ const getGraphQlData = async (context: GetServerSidePropsContext) => {
     );
     return [] as Array<{
       id: string;
-      watched: boolean;
-      likeDislike: LikeDislikeState;
-      videoId: string;
+      watched?: boolean;
+      likeDislike?: LikeDislikeState;
+      videoId?: string;
     }>;
   }
 };
 
-export const getSections = async (context: GetServerSidePropsContext) => {
-  if (process.env.DEVELOPMENT) {
-    console.log("IN DEVELOPMENT: Returning sections from sections.json");
-    return sectionsJson as Section[];
-  }
-
-  const sectionQueries: SectionQuery[] = [];
-  const graphQlData = await getGraphQlData(context);
-  if (graphQlData && graphQlData.length > 0) {
-    const videoIds = graphQlData.map((x) => x.videoId);
-    sectionQueries.push({
-      title: "Watch it Again",
-      endpoint: YoutubeEndpoint.byVideoIds,
-      cardSize: CardSizeEnum.small,
-      id: videoIds.join(`%2C`),
-    });
-  }
-
-  [
-    {
-      title: "Disney",
-      query: "disney trailer official",
-      endpoint: YoutubeEndpoint.search,
-      cardSize: CardSizeEnum.large,
-    },
-    {
-      title: "Programming",
-      query: "programming",
-      endpoint: YoutubeEndpoint.search,
-      cardSize: CardSizeEnum.small,
-    },
-    {
-      title: "Music Production",
-      query: "music production",
-      endpoint: YoutubeEndpoint.search,
-      cardSize: CardSizeEnum.medium,
-    },
-    {
-      title: "Popular Videos",
-      endpoint: YoutubeEndpoint.popular,
-      cardSize: CardSizeEnum.large,
-    },
-  ].forEach((q) => sectionQueries.push(q));
-
+const fetchSectionMembersData = async (sectionQueries: SectionQuery[]) => {
   try {
     const sections = await Promise.all(
       sectionQueries.map(async ({ query, endpoint, title, cardSize, id }) => {
@@ -155,4 +111,77 @@ export const getSections = async (context: GetServerSidePropsContext) => {
     );
     throw error;
   }
+};
+
+export const getMyListSections = async (context: GetServerSidePropsContext) => {
+  const likedVideoStats = await getGraphQlData(
+    context,
+    MyListQuery,
+    MyListQueryInput
+  );
+  const videoIds = likedVideoStats.map((x) => x.videoId);
+  const sectionQueries: SectionQuery[] = [
+    {
+      title: "My List",
+      endpoint: YoutubeEndpoint.byVideoIds,
+      cardSize: CardSizeEnum.small,
+      id: videoIds.join(`%2C`),
+    },
+  ];
+
+  const sections = await fetchSectionMembersData(sectionQueries);
+  return sections;
+};
+
+export const getHomeSections = async (context: GetServerSidePropsContext) => {
+  if (process.env.DEVELOPMENT) {
+    console.log("IN DEVELOPMENT: Returning sections from sections.json");
+    return sectionsJson as Section[];
+  }
+
+  const sectionQueries: SectionQuery[] = [
+    {
+      title: "Disney",
+      query: "disney trailer official",
+      endpoint: YoutubeEndpoint.search,
+      cardSize: CardSizeEnum.large,
+    },
+  ];
+  const watchedVideoStats = await getGraphQlData(
+    context,
+    WatchedQuery,
+    WatchedQueryInput
+  );
+  if (watchedVideoStats && watchedVideoStats.length > 0) {
+    const videoIds = watchedVideoStats.map((x) => x.videoId);
+    sectionQueries.push({
+      title: "Watch it Again",
+      endpoint: YoutubeEndpoint.byVideoIds,
+      cardSize: CardSizeEnum.small,
+      id: videoIds.join(`%2C`),
+    });
+  }
+
+  [
+    {
+      title: "Programming",
+      query: "programming",
+      endpoint: YoutubeEndpoint.search,
+      cardSize: CardSizeEnum.small,
+    },
+    {
+      title: "Music Production",
+      query: "music production",
+      endpoint: YoutubeEndpoint.search,
+      cardSize: CardSizeEnum.medium,
+    },
+    {
+      title: "Popular Videos",
+      endpoint: YoutubeEndpoint.popular,
+      cardSize: CardSizeEnum.large,
+    },
+  ].forEach((q) => sectionQueries.push(q));
+
+  const sections = await fetchSectionMembersData(sectionQueries);
+  return sections;
 };

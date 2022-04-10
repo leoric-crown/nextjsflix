@@ -16,8 +16,8 @@ const NavUser = () => {
 
   const handleSignOut = () => {
     setShowDropdown(false);
-    signOut();
     router.push("/")
+    signOut();
   };
 
   return (

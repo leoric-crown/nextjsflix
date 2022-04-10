@@ -9,8 +9,10 @@ import styles from "../styles/Home.module.css";
 import Banner from "../components/Banner";
 import Navbar from "../components/Navbar";
 import CardsSection from "../components/CardsSection";
-import { getSections, Section } from "../lib/sections";
+import { getHomeSections, Section } from "../lib/sections";
 import { getImgUrl, ImgQuality, YoutubeVideo } from "../lib/youtube";
+import { useAuth } from "../hooks/useAuth";
+import Loader from "../components/Loader";
 
 type HomeProps = {
   sections: Section[];
@@ -21,9 +23,8 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ): Promise<GetServerSidePropsResult<HomeProps>> => {
   try {
-    const sections = await getSections(context);
-    console.log("have sections", { sections });
-    console.log("sections[0].error", sections[0].error);
+    const sections = await getHomeSections(context);
+    console.log("HOME: Have sections", { sections });
 
     // const allVideos = sections
     //   .map((section) => section.list)
@@ -56,6 +57,7 @@ export const getServerSideProps = async (
 
 const Home: NextPage<HomeProps> = (props: HomeProps) => {
   const [isBannerTransparent, setIsBannerTransparent] = useState(true);
+  const { loading } = useAuth();
   const { sections, bannerVideo } = props;
 
   const bannerRef = useRef<HTMLInputElement>(null);
@@ -99,38 +101,44 @@ const Home: NextPage<HomeProps> = (props: HomeProps) => {
       </Head>
 
       <div className={styles.main}>
-        <Navbar gradientBackground={isBannerTransparent} />
-        <Banner
-          title={bannerVideo?.title as string}
-          subTitle={bannerVideo?.channelTitle as string}
-          imgUrl={
-            bannerVideo?.imgUrls
-              ? getImgUrl(ImgQuality.maxres, bannerVideo.imgUrls)
-              : ""
-          }
-          videoId={bannerVideo?.id as string}
-          ref={bannerRef}
-        />
-        <div className={styles.sectionWrapper}>
-          {sections.length > 0 &&
-            sections.map((section: Section, index: number) => {
-              if (section.error) {
-                console.warn(
-                  `Error in index.tsx, rendering section: ${section.title}`,
-                  section.error
-                );
-                return false;
+        {loading ? (
+          <Loader />
+        ) : (
+          <>
+            <Navbar gradientBackground={isBannerTransparent} />
+            <Banner
+              title={bannerVideo?.title as string}
+              subTitle={bannerVideo?.channelTitle as string}
+              imgUrl={
+                bannerVideo?.imgUrls
+                  ? getImgUrl(ImgQuality.maxres, bannerVideo.imgUrls)
+                  : ""
               }
-              return (
-                <CardsSection
-                  key={index}
-                  title={section.title}
-                  cardSize={section.cardSize}
-                  videoList={section.list}
-                />
-              );
-            })}
-        </div>
+              videoId={bannerVideo?.id as string}
+              ref={bannerRef}
+            />
+            <div className={styles.sectionWrapper}>
+              {sections.length > 0 &&
+                sections.map((section: Section, index: number) => {
+                  if (section.error) {
+                    console.warn(
+                      `Error in index.tsx, rendering section: ${section.title}`,
+                      section.error
+                    );
+                    return false;
+                  }
+                  return (
+                    <CardsSection
+                      key={index}
+                      title={section.title}
+                      cardSize={section.cardSize}
+                      videoList={section.list}
+                    />
+                  );
+                })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

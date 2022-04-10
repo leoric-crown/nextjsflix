@@ -1,4 +1,11 @@
 /** source: https://projects.lukehaas.me/css-loaders/ **/
+.loaderWrapper {
+  height: 100vh;
+  position: absolute;
+  display: flex;
+  width: 100%;
+}
+
 .loader,
 .loader:before,
 .loader:after {
@@ -13,7 +20,7 @@
 .loader {
   color: #ffffff;
   font-size: 10px;
-  margin: 80px auto;
+  margin: auto;
   position: relative;
   text-indent: -9999em;
   -webkit-transform: translateZ(0);

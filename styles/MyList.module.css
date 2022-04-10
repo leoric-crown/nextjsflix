@@ -1,0 +1,41 @@
+.main {
+  padding-bottom: 4rem /* 64px */;
+  margin-top: 6rem /* 96px */;
+}
+
+.sectionWrapper {
+  margin-top: 1.5rem /* 24px */;
+  margin-bottom: 1.5rem /* 24px */;
+}
+
+.notLoggedInWrapper {
+  display: flex;
+  height: 100vh;
+}
+
+.notLoggedIn {
+  display: flex;
+  background-color: var(--gray40);
+  width: 400px;
+  height: 200px;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin: auto;
+}
+
+.notLoggedInBody {
+  margin: auto;
+}
+
+.buttonWrapper {
+  display: flex;
+  padding: 0.5rem;
+}
+
+.button {
+  margin: auto;
+  background-color: var(--gray20);
+  color: var(--black20);
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  border-radius: 0.5rem;
+}

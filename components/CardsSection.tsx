@@ -4,11 +4,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { YoutubeVideo } from "../lib/youtube";
 import styles from "../styles/cards-section.module.css";
 import Card, { CardSizeEnum } from "./Card";
+import clsx from "classnames";
 
 export type CardsSectionProps = {
   title: string;
   cardSize: CardSizeEnum;
   videoList: YoutubeVideo[];
+  wrap?: boolean;
 };
 
 enum ScrollDirection {
@@ -17,6 +19,7 @@ enum ScrollDirection {
 }
 
 const CardsSection: React.FC<CardsSectionProps> = (props) => {
+  const { title, cardSize, videoList, wrap = false } = props;
   const scrollRef = useRef<HTMLInputElement>(null);
   const [scrollSteps, setScrollSteps] = useState([] as number[]);
   const [scrollStepIndex, setScrollStepIndex] = useState(0);
@@ -64,29 +67,34 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
     }
   };
 
-  const { title, cardSize, videoList } = props;
   return (
     <section className={styles.container}>
       <h2 className={styles.title}>{title}</h2>
       <div className={styles.scrollContainer}>
+        {!wrap && (
+          <div
+            className={styles.leftChevronContainer}
+            onClick={() => handleScrollClick(ScrollDirection.left)}
+          >
+            <Image
+              src={"/static/chevron_left.svg"}
+              alt="Scroll Left"
+              width="48px"
+              height="48px"
+            />
+          </div>
+        )}
         <div
-          className={styles.leftChevronContainer}
-          onClick={() => handleScrollClick(ScrollDirection.left)}
+          className={clsx(styles.cardWrapper, wrap ? styles.wrap : "")}
+          ref={scrollRef}
         >
-          <Image
-            src={"/static/chevron_left.svg"}
-            alt="Scroll Left"
-            width="48px"
-            height="48px"
-          />
-        </div>
-        <div className={styles.cardWrapper} ref={scrollRef}>
           {videoList?.length > 0 &&
             videoList.map((video, index) => {
               return (
                 <Link key={index} href={`/video/${video.id}`}>
-                  <a>
+                  <a className={wrap ? styles.addMargins : ""}>
                     <Card
+                      videoId={video.id}
                       title={video.title}
                       index={index}
                       size={cardSize}
@@ -97,17 +105,19 @@ const CardsSection: React.FC<CardsSectionProps> = (props) => {
               );
             })}
         </div>
-        <div
-          className={styles.rightChevronContainer}
-          onClick={() => handleScrollClick(ScrollDirection.right)}
-        >
-          <Image
-            src={"/static/chevron_right.svg"}
-            alt="Scroll Left"
-            width="48px"
-            height="48px"
-          />
-        </div>
+        {!wrap && (
+          <div
+            className={styles.rightChevronContainer}
+            onClick={() => handleScrollClick(ScrollDirection.right)}
+          >
+            <Image
+              src={"/static/chevron_right.svg"}
+              alt="Scroll Left"
+              width="48px"
+              height="48px"
+            />
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import cls from "classnames";
 import { motion } from "framer-motion";
 import styles from "../styles/card.module.css";
@@ -19,6 +19,7 @@ const classMap = {
 
 export interface CardProps {
   title: string;
+  videoId: string;
   imgUrls: ImgUrls;
   size: CardSizeEnum;
   link?: string;
@@ -26,9 +27,10 @@ export interface CardProps {
 }
 
 const Card: React.FC<CardProps> = (props) => {
-  const { index, size = CardSizeEnum.medium, imgUrls, title } = props;
-
-  const imgSrc = getImgUrl(ImgQuality.high, imgUrls);
+  const { index, videoId, size = CardSizeEnum.medium, imgUrls, title } = props;
+  const [imgSrc, setImgSrc] = useState(
+    `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+  );
 
   const motionScale = index === 0 ? { scaleY: 1.1 } : { scale: 1.1 };
 
@@ -43,6 +45,7 @@ const Card: React.FC<CardProps> = (props) => {
           src={imgSrc}
           alt={`${title} Card Image`}
           layout="fill"
+          onError={() => setImgSrc(getImgUrl(ImgQuality.maxres, imgUrls))}
         />
       </motion.div>
     </div>

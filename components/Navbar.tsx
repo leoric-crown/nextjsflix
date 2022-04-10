@@ -48,14 +48,13 @@ const Navbar: React.FC<NavBarProps> = (props) => {
           </li>
           <li
             className={styles.navItem2}
-            onClick={(event) => handleOnClickNav(event, "/my-list")}
+            onClick={(event) => handleOnClickNav(event, "/browse/my-list")}
           >
             My List
           </li>
         </ul>
         <nav className={styles.navContainer}>
-          <NavUser/>
-          
+          <NavUser />
         </nav>
       </div>
     </div>

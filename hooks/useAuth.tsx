@@ -35,6 +35,7 @@ export const googleSignIn = async () => {
 
 type ContextState = {
   user: User | null;
+  error: Error;
   loading: boolean;
   signIn: () => Promise<void>;
   signOut: () => void;
@@ -52,39 +53,44 @@ export const AuthContextProvider = ({
 }) => {
   const [user, setUser] = useState(null as User | null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null as unknown as Error);
 
   const signIn = async () => {
     setLoading(true);
     try {
       const newUser: User = await googleSignIn();
       setUser(newUser);
-    } catch (error) {
+    } catch (err) {
       console.error(
         "There was an error in useAuth/signIn: ",
-        (error as Error).message
+        (err as Error).message
       );
+      setError(err as Error);
     }
   };
 
   const signOut = () => {
     auth.signOut();
-    nookies.destroy(undefined, "token")
+    nookies.destroy(undefined, "token");
     setUser(null);
   };
+
+  useEffect(() => {
+    setLoading(false);
+  }, [user, error]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (newUser) => {
       const token = await newUser?.getIdToken();
       nookies.set(undefined, "token", token as string, { path: "/" });
       setUser(newUser);
-      setLoading(false);
     });
 
     return () => unsubscribe();
   });
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, error, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

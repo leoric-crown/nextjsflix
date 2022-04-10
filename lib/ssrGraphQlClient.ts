@@ -3,16 +3,26 @@ import { setContext } from "@apollo/client/link/context";
 import { GetServerSidePropsContext } from "next";
 import nookies from "nookies";
 
+let token = "";
 export const getClient = (context: GetServerSidePropsContext) => {
+  console.log("in getClient: ", { token });
+  const newToken = nookies.get(context).token;
+
+  if (token !== newToken) {
+    console.log("there is a new token");
+    token = newToken;
+  } else {
+    console.log("token is the same as the old one");
+  }
+
   const httpLink = createHttpLink({
-    uri: process.env.GRAPHQL_URI,
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
   });
-  const token = nookies.get(context).token;
   const authLink = setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
-        authorization: token,
+        authorization: newToken,
       },
     };
   });

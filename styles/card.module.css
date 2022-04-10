@@ -1,11 +1,7 @@
-.imgMotionWrapper {
+.imageMotionWrapper {
   position: relative;
   display: inline-block;
 }
-
-/* .imgMotionWrapper:hover {
-  z-index: 50;
-} */
 
 .smItem {
   position: relative;
@@ -31,12 +27,13 @@
   min-height: 434px;
 }
 .container {
+  position: relative;
   margin-right: 0.25rem /* 4px */;
   cursor: pointer;
 }
 
 .container:hover {
-  z-index: 50;
+  z-index: 30;
 }
 
 .cardImg {

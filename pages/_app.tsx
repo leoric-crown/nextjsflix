@@ -6,37 +6,19 @@ import { AuthContextProvider } from "../hooks/useAuth";
 import Loader from "../components/Loader";
 import ApolloClientProvider from "../components/ApolloClientProvider";
 
-// const httpLink = createHttpLink({
-//   uri: "http://localhost:5000/nextjsflixfb/us-central1/graphql",
-// });
-
-// const authLink = setContext((_, { headers }) => {
-//   const token = "sometoken";
-//   return {
-//     headers: {
-//       ...headers,
-//       authorization: token,
-//     },
-//   };
-// });
-
-// const graphqlClient = new ApolloClient({
-//   link: authLink.concat(httpLink),
-//   cache: new InMemoryCache(),
-// });
-
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const handleComplete = () => {
-      setLoading(false);
-    };
+    const handleChange = () => setLoading(true);
+    const handleComplete = () => setLoading(false);
+    router.events.on("routeChangeStart", handleChange);
     router.events.on("routeChangeComplete", handleComplete);
     router.events.on("routeChangeError", handleComplete);
 
     return () => {
+      router.events.off("routeChangeStart", handleChange);
       router.events.off("routeChangeComplete", handleComplete);
       router.events.off("routeChangeError", handleComplete);
     };

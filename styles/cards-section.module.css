@@ -6,7 +6,7 @@
 }
 
 .scrollContainer {
-    display: flex;
+  display: flex;
 }
 
 .title {
@@ -26,21 +26,27 @@
 }
 
 .leftChevronContainer {
-    align-self: center;
-    position: absolute;
-    left: -0.5rem;
-    z-index: 40;
+  align-self: center;
+  position: absolute;
+  left: -0.5rem;
+  z-index: 40;
 }
 
 .rightChevronContainer {
-    align-self: center;
-    position: absolute;
-    right: -0.5rem;
-    z-index: 40;
+  align-self: center;
+  position: absolute;
+  right: -0.5rem;
+  z-index: 40;
 }
 
 .wrap {
   flex-wrap: wrap;
+  margin: auto;
+}
+
+.addMargins {
+  margin: auto;
+  padding: 1rem;
 }
 
 .mb3 {
@@ -50,14 +56,3 @@
 .mb2 {
   margin-bottom: 2rem /* 32px */;
 }
-
-/* .cardImg:hover {
-  z-index: 50;
-} */
-
-/* @media (min-width: 768px) {
-    .container {
-      padding-left: 4rem /* 64px */
-/* padding-right: 4rem 64px; */
-/* }  */
-/* } */

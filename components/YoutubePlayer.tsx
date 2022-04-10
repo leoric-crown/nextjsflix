@@ -1,6 +1,11 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import YouTube, { Options } from "react-youtube";
+import {
+  ProgressMutation,
+  VideoProgressQuery,
+  WatchedMutation,
+} from "../lib/graphql";
 import styles from "../styles/youtube-player.module.css";
 
 const youtubeOptions: Options = {
@@ -38,34 +43,6 @@ const emptyInterval = setInterval(() => {
   return;
 });
 
-const GET_VIDEO_PROGRESSWATCHED = gql`
-  query GetVideoProgressWatched($input: VideoStatsQueryInput) {
-    video(input: $input) {
-      id
-      progress
-      watched
-    }
-  }
-`;
-
-const MUTATE_PROGRESS = gql`
-  mutation MutateProgress($input: StatsInput) {
-    video(input: $input) {
-      id
-      progress
-    }
-  }
-`;
-
-const MUTATE_WATCHED = gql`
-  mutation MutateWatched($input: StatsInput) {
-    video(input: $input) {
-      id
-      watched
-    }
-  }
-`;
-
 const progressPollingRate = 1000;
 const postRate = 5000;
 const watchedThreshold = 0.85;
@@ -74,7 +51,7 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = (props) => {
   const { videoId, isAuth } = props;
 
   const { data: queryData, loading: loadingStats } = useQuery(
-    GET_VIDEO_PROGRESSWATCHED,
+    VideoProgressQuery,
     {
       variables: { input: { videoId } },
       fetchPolicy: "network-only",
@@ -90,10 +67,10 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = (props) => {
   const postIntervalRef = useRef(emptyInterval);
   const playerRef = useRef(null);
 
-  const [postProgress] = useMutation(MUTATE_PROGRESS, {
+  const [postProgress] = useMutation(ProgressMutation, {
     variables: { input: { videoId, progress } },
   });
-  const [postWatched, { data: postedData }] = useMutation(MUTATE_WATCHED, {
+  const [postWatched, { data: postedData }] = useMutation(WatchedMutation, {
     variables: { input: { videoId, watched } },
   });
 
