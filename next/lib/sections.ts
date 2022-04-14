@@ -133,10 +133,10 @@ export const getMyListSections = async (context: GetServerSidePropsContext) => {
 };
 
 export const getHomeSections = async (context: GetServerSidePropsContext) => {
-  // if (process.env.DEVELOPMENT) {
-  //   console.log("IN DEVELOPMENT: Returning sections from sections.json");
-  //   return sectionsJson as Section[];
-  // }
+  if (process.env.DEVELOPMENT) {
+    console.log("IN DEVELOPMENT: Returning sections from sections.json");
+    return sectionsJson as Section[];
+  }
 
   const sectionQueries: SectionQuery[] = [
     {
@@ -181,6 +181,11 @@ export const getHomeSections = async (context: GetServerSidePropsContext) => {
     },
   ].forEach((q) => sectionQueries.push(q));
 
-  const sections = await fetchSectionMembersData(sectionQueries);
-  return sections;
+  try {
+    const sections = await fetchSectionMembersData(sectionQueries);
+    return sections;
+  } catch (error) {
+    console.error((error as Error).message);
+    return sectionsJson;
+  }
 };
