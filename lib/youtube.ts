@@ -117,7 +117,6 @@ const fetchYoutubeVideosData = async (queryParameters: QueryParameters) => {
     console.log("youtube:tsx || Fetching from: ", queryUrl);
     const response = await fetch(queryUrl + `&key=${YOUTUBE_DATA_API_KEY}`);
     const json = await response.json();
-    console.log({ json });
     if (json.error) throw json.error;
     return json;
   } catch (error) {

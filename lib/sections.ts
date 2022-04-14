@@ -72,7 +72,6 @@ const fetchSectionMembersData = async (sectionQueries: SectionQuery[]) => {
   try {
     const sections = await Promise.all(
       sectionQueries.map(async ({ query, endpoint, title, cardSize, id }) => {
-        console.log({ query, endpoint, title, cardSize, id });
         return new Promise((resolve) => {
           getVideoData({ endpoint, query, id })
             .then((list) => {
@@ -134,10 +133,10 @@ export const getMyListSections = async (context: GetServerSidePropsContext) => {
 };
 
 export const getHomeSections = async (context: GetServerSidePropsContext) => {
-  if (process.env.DEVELOPMENT) {
-    console.log("IN DEVELOPMENT: Returning sections from sections.json");
-    return sectionsJson as Section[];
-  }
+  // if (process.env.DEVELOPMENT) {
+  //   console.log("IN DEVELOPMENT: Returning sections from sections.json");
+  //   return sectionsJson as Section[];
+  // }
 
   const sectionQueries: SectionQuery[] = [
     {

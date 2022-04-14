@@ -4,13 +4,14 @@ import {
   NextPage,
 } from "next";
 import Head from "next/head";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import CardsSection from "../../components/CardsSection";
 import Loader from "../../components/Loader";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "../../styles/MyList.module.css";
 import { getMyListSections, Section } from "../../lib/sections";
+import { useRouter } from "next/router";
 
 type MyListProps = {
   sections: Section[];
@@ -20,7 +21,6 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ): Promise<GetServerSidePropsResult<MyListProps>> => {
   const sections = await getMyListSections(context);
-  console.log("MYLIST: Have sections: ", { sections });
 
   return { props: { sections } };
 };
@@ -28,6 +28,27 @@ export const getServerSideProps = async (
 const MyList: NextPage<MyListProps> = (props: MyListProps) => {
   const { sections } = props;
   const { user, loading: loadingUser, signIn } = useAuth();
+  const userRef = useRef(user);
+  const router = useRouter();
+
+  const handleSignIn = async () => {
+    try {
+      await signIn();
+      router.push(router.pathname);
+    } catch (error) {
+      console.error(
+        "There was an error while signing in: ",
+        (error as Error).message
+      );
+    }
+  };
+
+  useEffect(() => {
+    const previousUser = userRef.current;
+    if (user && !previousUser) {
+      router.push(router.pathname);
+    }
+  }, [router, user]);
 
   return (
     <div>
@@ -67,7 +88,7 @@ const MyList: NextPage<MyListProps> = (props: MyListProps) => {
                 <div className={styles.notLoggedInBody}>
                   <p>Please sign in to view your list</p>
                   <div className={styles.buttonWrapper}>
-                    <button className={styles.button} onClick={signIn}>
+                    <button className={styles.button} onClick={handleSignIn}>
                       Sign In
                     </button>
                   </div>

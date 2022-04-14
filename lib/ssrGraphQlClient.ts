@@ -5,11 +5,11 @@ import nookies from "nookies";
 
 let token = "";
 export const getClient = (context: GetServerSidePropsContext) => {
-  console.log("in getClient: ", { token });
+  console.log("in getClient: ", { tokenLength: token.length });
   const newToken = nookies.get(context).token;
 
   if (token !== newToken) {
-    console.log("there is a new token");
+    console.log("there is a new token with length: ", newToken.length);
     token = newToken;
   } else {
     console.log("token is the same as the old one");

@@ -24,7 +24,6 @@ export const getServerSideProps = async (
 ): Promise<GetServerSidePropsResult<HomeProps>> => {
   try {
     const sections = await getHomeSections(context);
-    console.log("HOME: Have sections", { sections });
 
     // const allVideos = sections
     //   .map((section) => section.list)
