@@ -34,8 +34,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# firebase config file
-firebaseConfig.js
-
 firebase-debug.log
 /functions/firebase-debug.log
