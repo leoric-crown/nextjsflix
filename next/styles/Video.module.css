@@ -1,0 +1,98 @@
+.modal {
+  position: absolute;
+  /* overflow-y: scroll; */
+  /** centers modal **/
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  height: 85vh;
+
+  width: 800px;
+  bottom: 40px;
+  background-color: var(--gray40);
+  top: 10%;
+
+  outline: none;
+  border-radius: 10px;
+  border: 1px solid var(--shadow10);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/** Modal body **/
+.modalBody {
+  height: 36vh;
+  padding: 0 3rem;
+}
+
+.modalBodyContent {
+  height: inherit;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  column-gap: 2em;
+}
+
+.col1 {
+  height: inherit;
+  overflow-y: scroll;
+}
+
+.publishTime {
+  font-size: 1.125rem /* 18px */;
+  line-height: 1.75rem /* 28px */;
+  margin-top: 1.5rem /* 24px */;
+  margin-bottom: 0.5rem /* 8px */;
+  color: var(--green10);
+}
+
+.text {
+  font-size: 1.125rem /* 18px */;
+  line-height: 1.75rem /* 28px */;
+  color: var(--white10);
+}
+
+.description {
+  margin-bottom: 0.5rem /* 8px */;
+  margin-top: 0.75rem /* 12px */;
+}
+
+.col2 {
+  color: var(--white10);
+  line-height: 1.75rem /* 28px */;
+  display: flex;
+  flex-direction: column;
+}
+
+.subText {
+  font-size: 0.875rem /* 14px */;
+  line-height: 1.25rem /* 20px */;
+  margin-left: 0px;
+  overflow-wrap: break-word;
+}
+
+.subTextWrapper {
+  margin-top: 1.5rem /* 24px */;
+}
+
+.textColor {
+  color: var(--gray10);
+}
+
+.channelTitle {
+  color: var(--white30);
+  margin: 0px;
+}
+
+@media (min-width: 1024px) {
+  .modal {
+    top: 10%;
+    bottom: 40px;
+    width: 75%;
+  }
+}

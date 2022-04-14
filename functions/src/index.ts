@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-import * as express from "express";
+import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { verifyToken } from "./firebase";
 import { typeDefs, resolvers } from "./graphql";
