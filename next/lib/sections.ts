@@ -186,6 +186,6 @@ export const getHomeSections = async (context: GetServerSidePropsContext) => {
     return sections;
   } catch (error) {
     console.error((error as Error).message);
-    return sectionsJson;
+    return sectionsJson as Section[];
   }
 };
